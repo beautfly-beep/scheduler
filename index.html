@@ -1,34 +1,124 @@
-const DEFAULT_FILL_NAME = "Jane";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Doubles Scheduler</title>
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin:24px; color:#111; }
+    .card { border:1px solid #ddd; border-radius:10px; padding:16px; margin:16px 0; }
+    textarea { width:100%; min-height:220px; padding:10px; font-size:14px; }
+    button { padding:10px 14px; font-size:14px; border-radius:8px; cursor:pointer; }
+    .primary { background:#111; color:#fff; border:1px solid #111; }
+    .secondary { background:#fff; border:1px solid #ccc; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border:1px solid #ddd; padding:8px; }
+    th { background:#f6f6f6; }
+    .small { color:#555; font-size:13px; }
+  </style>
+</head>
+<body>
+  <h1>Doubles Scheduler</h1>
+  <div class="small">12 players · 3 courts (CRT10/CRT11/CRT12) · 2 sets · doubles</div>
 
-function fillToTwelve(names) {
-  const seen = new Set(names.map(n => n.toLowerCase()));
-  while (names.length < 12) {
-    // 优先补 Jane
-    if (!seen.has(DEFAULT_FILL_NAME.toLowerCase())) {
-      names.push(DEFAULT_FILL_NAME);
-      seen.add(DEFAULT_FILL_NAME.toLowerCase());
-    } else {
-      // Jane 已存在但仍不足 12：不要乱补，交给 Captain 手动补
-      break;
+  <div class="card">
+    <label><strong>Players (12 total)</strong></label>
+    <textarea id="players">Echo
+Gillian
+Jane
+Lisa
+Michele
+Sandie
+Sonia
+Tao
+Teng
+Tina
+Veronika
+Nancy</textarea>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="primary" id="gen">Generate Schedule</button>
+      <button class="secondary" id="copy">Copy Result</button>
+    </div>
+    <div id="msg" class="small" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <label><strong>Schedule</strong></label>
+    <div id="out" class="small">Click “Generate Schedule”.</div>
+  </div>
+
+<script>
+  const courts = ["CRT10","CRT11","CRT12"];
+  let lastText = "";
+
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
     }
+    return a;
   }
-  return names;
-}
+  function key(a,b){ return [a,b].sort().join("||"); }
 
-// 在 Extract Names 点击事件中使用：
-const candidates = extractCandidateNames(raw);
-let top = candidates.slice(0, 12);
+  function parsePlayers(){
+    const lines = document.getElementById("players").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    const uniq = [...new Set(lines)];
+    return uniq;
+  }
 
-// 如果不足 12，就自动补 Jane（且不重复）
-if (top.length < 12) top = fillToTwelve(top);
+  function makeSet(players){
+    const pool = shuffle(players);
+    const matches = [];
+    for(const c of courts){
+      const g = pool.splice(0,4);
+      matches.push({court:c, A:[g[0],g[1]], B:[g[2],g[3]]});
+    }
+    return matches;
+  }
 
-// 填入 Players
-$players.value = top.join("\n");
-if (typeof refreshPlayerDropdowns === "function") refreshPlayerDropdowns();
+  function generate(){
+    const msg = document.getElementById("msg");
+    const out = document.getElementById("out");
+    const players = parsePlayers();
+    if(players.length !== 12){
+      msg.textContent = "Need exactly 12 unique player names.";
+      return;
+    }
 
-// 提示
-if (top.length < 12) {
-  setOcrStatus(`Detected ${candidates.length} names. Jane already present; please add missing player(s) manually.`);
-} else {
-  setOcrStatus(`Filled ${top.length} players (auto-filled missing slot with Jane if needed).`);
-}
+    const s1 = makeSet(players);
+    const used = new Set();
+    for(const m of s1){
+      used.add(key(m.A[0],m.A[1]));
+      used.add(key(m.B[0],m.B[1]));
+    }
+
+    let s2, tries=0;
+    do{
+      s2 = makeSet(players);
+      tries++;
+      if(tries>300) break;
+    } while (s2.some(m => used.has(key(m.A[0],m.A[1])) || used.has(key(m.B[0],m.B[1]))));
+
+    function render(set, title){
+      let html = `<h3>${title}</h3><table><tr><th>Court</th><th>Team A</th><th>Team B</th></tr>`;
+      for(const m of set){
+        html += `<tr><td>${m.court}</td><td>${m.A.join(" / ")}</td><td>${m.B.join(" / ")}</td></tr>`;
+      }
+      return html + `</table>`;
+    }
+
+    out.innerHTML = render(s1,"Set 1") + render(s2,"Set 2");
+    lastText = out.innerText;
+    msg.textContent = "Generated.";
+  }
+
+  document.getElementById("gen").addEventListener("click", generate);
+  document.getElementById("copy").addEventListener("click", async ()=>{
+    try{ await navigator.clipboard.writeText(lastText || ""); }catch(e){}
+  });
+</script>
+</body>
+</html>
