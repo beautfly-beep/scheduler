@@ -3,122 +3,531 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Doubles Scheduler</title>
+  <title>PlayHoods Scheduler</title>
   <style>
-    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin:24px; color:#111; }
-    .card { border:1px solid #ddd; border-radius:10px; padding:16px; margin:16px 0; }
-    textarea { width:100%; min-height:220px; padding:10px; font-size:14px; }
-    button { padding:10px 14px; font-size:14px; border-radius:8px; cursor:pointer; }
-    .primary { background:#111; color:#fff; border:1px solid #111; }
-    .secondary { background:#fff; border:1px solid #ccc; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin:24px; color:#111; }
+    h1 { margin:0 0 6px; font-size:20px; }
+    .note { margin:0 0 16px; color:#444; font-size:13px; line-height:1.4; }
+    .grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap:16px; align-items:start; }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+    .card { border:1px solid #ddd; border-radius:12px; padding:14px; }
+    label { display:block; font-weight:800; margin:10px 0 6px; }
+    input[type="text"] { padding:10px; font-size:14px; width:100%; box-sizing:border-box; border:1px solid #ccc; border-radius:10px; }
+    button { padding:10px 12px; font-size:14px; border-radius:10px; cursor:pointer; }
+    button.primary { background:#111; color:#fff; border:1px solid #111; }
+    button.secondary { background:#fff; border:1px solid #ccc; }
+    button.danger { background:#fff; border:1px solid #d33; color:#b00; }
     .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .small { font-size:13px; color:#555; }
+    .muted { color:#666; font-size:13px; }
+    .list { border:1px solid #eee; border-radius:10px; padding:10px; max-height:280px; overflow:auto; }
+    .item { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:6px 4px; border-bottom:1px dashed #eee; }
+    .item:last-child { border-bottom:none; }
+    .checkboxRow { display:flex; align-items:center; gap:10px; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; color:#555; }
     table { width:100%; border-collapse:collapse; margin-top:10px; }
-    th, td { border:1px solid #ddd; padding:8px; }
+    th, td { border:1px solid #ddd; padding:8px; vertical-align:top; }
     th { background:#f6f6f6; }
-    .small { color:#555; font-size:13px; }
+    select { padding:10px; font-size:14px; border:1px solid #ccc; border-radius:10px; }
+    .ok { color:#0b6b0b; font-weight:800; }
+    .warn { color:#b00020; font-weight:800; }
+    .pairItem { margin:6px 0; display:flex; align-items:center; gap:10px; }
+    code.k { background:#f2f2f2; padding:2px 6px; border-radius:8px; }
   </style>
 </head>
 <body>
-  <h1>Doubles Scheduler</h1>
-  <div class="small">12 players · 3 courts (CRT10/CRT11/CRT12) · 2 sets · doubles</div>
-
-  <div class="card">
-    <label><strong>Players (12 total)</strong></label>
-    <textarea id="players">Echo
-Gillian
-Jane
-Lisa
-Michele
-Sandie
-Sonia
-Tao
-Teng
-Tina
-Veronika
-Nancy</textarea>
-
-    <div class="row" style="margin-top:12px;">
-      <button class="primary" id="gen">Generate Schedule</button>
-      <button class="secondary" id="copy">Copy Result</button>
-    </div>
-    <div id="msg" class="small" style="margin-top:10px;"></div>
+  <h1>PlayHoods Match Scheduler</h1>
+  <div class="note">
+    Build your <span class="pill">Roster</span> and <span class="pill">CRT library</span>, then select who’s attending and which courts are available.<br/>
+    Validation: <code class="k">players = courts × 4</code>. Generates <code class="k">2 sets</code> of doubles. Set 2 tries to minimize repeats vs Set 1.
   </div>
 
-  <div class="card">
-    <label><strong>Schedule</strong></label>
-    <div id="out" class="small">Click “Generate Schedule”.</div>
+  <div class="grid">
+    <!-- LEFT: Libraries + Session Selection -->
+    <div class="card">
+      <label>Roster Library</label>
+      <div class="row">
+        <input id="rosterAdd" type="text" placeholder="Add a player name (e.g., Nancy)" />
+        <button class="secondary" id="rosterAddBtn">Add</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="rosterSearch" type="text" placeholder="Search roster..." />
+        <button class="danger" id="rosterClearBtn" title="Clears the roster library stored on this device">Clear Roster</button>
+      </div>
+      <div id="rosterList" class="list" style="margin-top:10px;"></div>
+
+      <label style="margin-top:14px;">CRT Library</label>
+      <div class="row">
+        <input id="courtAdd" type="text" placeholder="Add a court label (e.g., CRT10)" />
+        <button class="secondary" id="courtAddBtn">Add</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="courtSearch" type="text" placeholder="Search courts..." />
+        <button class="danger" id="courtClearBtn" title="Clears the CRT library stored on this device">Clear Courts</button>
+      </div>
+      <div id="courtList" class="list" style="margin-top:10px;"></div>
+
+      <label style="margin-top:14px;">Today’s Selection</label>
+      <div class="small">
+        <span id="selPlayersCount">0</span> players selected ·
+        <span id="selCourtsCount">0</span> courts selected ·
+        Required players: <code class="k" id="requiredPlayers">0</code>
+      </div>
+      <div id="validationMsg" class="small" style="margin-top:8px;"></div>
+
+      <label style="margin-top:14px;">Fixed partners (optional)</label>
+      <div class="row">
+        <select id="p1"></select>
+        <select id="p2"></select>
+        <button class="secondary" id="addPairBtn">Add Pair</button>
+      </div>
+      <div id="pairsBox" class="small" style="margin-top:8px;"></div>
+
+      <div class="row" style="margin-top:14px;">
+        <button class="primary" id="generateBtn">Generate Schedule</button>
+        <button class="secondary" id="copyBtn">Copy Result</button>
+      </div>
+      <div id="status" class="small" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- RIGHT: Output -->
+    <div class="card">
+      <label>Schedule</label>
+      <div id="output" class="small">Select players and courts, then click “Generate Schedule”.</div>
+    </div>
   </div>
 
 <script>
-  const courts = ["CRT10","CRT11","CRT12"];
-  let lastText = "";
+/* =========================
+   Storage keys & defaults
+========================= */
+const LS_ROSTER = "playhoods_roster_v1";
+const LS_COURTS = "playhoods_courts_v1";
 
-  function shuffle(a){
-    a=a.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
+/* Default seed data (only used if nothing in localStorage) */
+const DEFAULT_ROSTER = [
+  "Echo","Gillian","Jane","Lisa","Michele","Sandie","Sonia","Tao","Teng","Tina","Veronika","Nancy"
+];
+const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13"];
+
+/* =========================
+   State
+========================= */
+let roster = [];
+let courts = [];
+let selectedPlayers = new Set();
+let selectedCourts = new Set();
+let fixedPairs = []; // array of [a,b]
+let lastText = "";
+
+/* =========================
+   Helpers
+========================= */
+function norm(s){ return (s||"").trim(); }
+function uniq(arr){
+  const seen = new Set();
+  const out = [];
+  for (const x of arr){
+    const k = x.toLowerCase();
+    if (!seen.has(k)){ seen.add(k); out.push(x); }
+  }
+  return out;
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function pairKey(a,b){ return [a,b].sort().join("||"); }
+function groupKey4(arr4){ return arr4.slice().sort().join("||"); }
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function saveAll(){
+  localStorage.setItem(LS_ROSTER, JSON.stringify(roster));
+  localStorage.setItem(LS_COURTS, JSON.stringify(courts));
+}
+
+function loadAll(){
+  const r = localStorage.getItem(LS_ROSTER);
+  const c = localStorage.getItem(LS_COURTS);
+  roster = r ? uniq(JSON.parse(r)).sort((a,b)=>a.localeCompare(b)) : DEFAULT_ROSTER.slice().sort((a,b)=>a.localeCompare(b));
+  courts = c ? uniq(JSON.parse(c)).sort((a,b)=>a.localeCompare(b)) : DEFAULT_COURTS.slice().sort((a,b)=>a.localeCompare(b));
+  saveAll();
+}
+
+/* =========================
+   Rendering: Roster & Courts
+========================= */
+function renderRoster(){
+  const q = norm(document.getElementById("rosterSearch").value).toLowerCase();
+  const box = document.getElementById("rosterList");
+  const list = roster.filter(n => !q || n.toLowerCase().includes(q));
+
+  box.innerHTML = list.length ? list.map(name => {
+    const checked = selectedPlayers.has(name) ? "checked" : "";
+    return `
+      <div class="item">
+        <div class="checkboxRow">
+          <input type="checkbox" data-kind="player" data-name="${escapeHtml(name)}" ${checked}/>
+          <div>${escapeHtml(name)}</div>
+        </div>
+        <button class="danger" data-del-kind="player" data-name="${escapeHtml(name)}" style="padding:6px 10px;">Delete</button>
+      </div>
+    `;
+  }).join("") : `<div class="muted">No roster entries.</div>`;
+
+  box.querySelectorAll('input[type="checkbox"][data-kind="player"]').forEach(cb=>{
+    cb.addEventListener("change", (e)=>{
+      const name = e.target.getAttribute("data-name");
+      if (e.target.checked) selectedPlayers.add(name);
+      else selectedPlayers.delete(name);
+      onSelectionChanged();
+    });
+  });
+  box.querySelectorAll('button[data-del-kind="player"]').forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const name = btn.getAttribute("data-name");
+      roster = roster.filter(x => x !== name);
+      selectedPlayers.delete(name);
+      // remove from fixedPairs if present
+      fixedPairs = fixedPairs.filter(([a,b]) => a!==name && b!==name);
+      saveAll();
+      renderRoster();
+      refreshPartnerDropdowns();
+      renderPairs();
+      onSelectionChanged();
+    });
+  });
+}
+
+function renderCourts(){
+  const q = norm(document.getElementById("courtSearch").value).toLowerCase();
+  const box = document.getElementById("courtList");
+  const list = courts.filter(n => !q || n.toLowerCase().includes(q));
+
+  box.innerHTML = list.length ? list.map(name => {
+    const checked = selectedCourts.has(name) ? "checked" : "";
+    return `
+      <div class="item">
+        <div class="checkboxRow">
+          <input type="checkbox" data-kind="court" data-name="${escapeHtml(name)}" ${checked}/>
+          <div>${escapeHtml(name)}</div>
+        </div>
+        <button class="danger" data-del-kind="court" data-name="${escapeHtml(name)}" style="padding:6px 10px;">Delete</button>
+      </div>
+    `;
+  }).join("") : `<div class="muted">No court entries.</div>`;
+
+  box.querySelectorAll('input[type="checkbox"][data-kind="court"]').forEach(cb=>{
+    cb.addEventListener("change", (e)=>{
+      const name = e.target.getAttribute("data-name");
+      if (e.target.checked) selectedCourts.add(name);
+      else selectedCourts.delete(name);
+      onSelectionChanged();
+    });
+  });
+  box.querySelectorAll('button[data-del-kind="court"]').forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const name = btn.getAttribute("data-name");
+      courts = courts.filter(x => x !== name);
+      selectedCourts.delete(name);
+      saveAll();
+      renderCourts();
+      onSelectionChanged();
+    });
+  });
+}
+
+/* =========================
+   Selection & Validation
+========================= */
+function requiredPlayersCount(){
+  return selectedCourts.size * 4;
+}
+
+function setStatus(msg, cls=""){
+  const el = document.getElementById("status");
+  el.className = "small " + (cls || "");
+  el.textContent = msg || "";
+}
+
+function onSelectionChanged(){
+  document.getElementById("selPlayersCount").textContent = selectedPlayers.size;
+  document.getElementById("selCourtsCount").textContent = selectedCourts.size;
+  document.getElementById("requiredPlayers").textContent = requiredPlayersCount();
+
+  // Rebuild partner dropdowns based on selectedPlayers
+  refreshPartnerDropdowns();
+  validateFixedPairsAgainstSelection();
+  renderPairs();
+
+  const msg = document.getElementById("validationMsg");
+  const need = requiredPlayersCount();
+
+  if (selectedCourts.size === 0){
+    msg.innerHTML = `<span class="warn">Select at least 1 court.</span>`;
+    document.getElementById("generateBtn").disabled = true;
+    return;
+  }
+  if (selectedPlayers.size !== need){
+    msg.innerHTML = `<span class="warn">Invalid selection: need exactly ${need} players for ${selectedCourts.size} courts.</span>`;
+    document.getElementById("generateBtn").disabled = true;
+    return;
+  }
+  msg.innerHTML = `<span class="ok">Valid: ${selectedPlayers.size} players for ${selectedCourts.size} courts.</span>`;
+  document.getElementById("generateBtn").disabled = false;
+}
+
+/* =========================
+   Fixed pairs UI & rules
+========================= */
+function refreshPartnerDropdowns(){
+  const p1 = document.getElementById("p1");
+  const p2 = document.getElementById("p2");
+  const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
+
+  const opts = ['<option value="">-- select --</option>']
+    .concat(players.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`));
+
+  p1.innerHTML = opts.join("");
+  p2.innerHTML = opts.join("");
+}
+
+function validateFixedPairsAgainstSelection(){
+  // remove pairs not fully in selectedPlayers
+  const set = new Set(selectedPlayers);
+  fixedPairs = fixedPairs.filter(([a,b]) => set.has(a) && set.has(b));
+}
+
+function renderPairs(){
+  const box = document.getElementById("pairsBox");
+  if (fixedPairs.length === 0){
+    box.innerHTML = "No fixed pairs.";
+    return;
+  }
+  box.innerHTML = fixedPairs.map((p,i) => `
+    <div class="pairItem">
+      <div><strong>${escapeHtml(p[0])}</strong> + <strong>${escapeHtml(p[1])}</strong></div>
+      <button class="danger" style="padding:6px 10px;" onclick="removePair(${i})">Remove</button>
+    </div>
+  `).join("");
+}
+
+window.removePair = function(i){
+  fixedPairs.splice(i,1);
+  renderPairs();
+};
+
+function addPair(){
+  const a = document.getElementById("p1").value;
+  const b = document.getElementById("p2").value;
+  if (!a || !b || a === b) return;
+
+  // Disallow overlaps: one person can't be in multiple fixed pairs
+  const used = new Set(fixedPairs.flat());
+  if (used.has(a) || used.has(b)){
+    alert("A player can only be in one fixed pair.");
+    return;
+  }
+  fixedPairs.push([a,b]);
+  renderPairs();
+}
+
+/* =========================
+   Scheduling logic
+   - variable number of courts (K)
+   - players count = 4K
+   - two sets
+   - Set2 optimized vs Set1
+========================= */
+function buildBlocks(players){
+  // Blocks: fixed pairs as size-2 blocks, remaining singles as size-1
+  const setPlayers = new Set(players);
+  const blocks = [];
+  const paired = new Set();
+
+  for (const [a,b] of fixedPairs){
+    if (setPlayers.has(a) && setPlayers.has(b)){
+      blocks.push([a,b]);
+      paired.add(a); paired.add(b);
     }
-    return a;
   }
-  function key(a,b){ return [a,b].sort().join("||"); }
-
-  function parsePlayers(){
-    const lines = document.getElementById("players").value.split("\n").map(s=>s.trim()).filter(Boolean);
-    const uniq = [...new Set(lines)];
-    return uniq;
+  for (const p of players){
+    if (!paired.has(p)) blocks.push([p]);
   }
+  return shuffle(blocks);
+}
 
-  function makeSet(players){
-    const pool = shuffle(players);
+function fillGroups(blocks, K){
+  // Greedy fill groups of 4. Since blocks are size 1 or 2, this works well.
+  const groups = [];
+  let cur = [];
+  for (const blk of blocks){
+    if (cur.length + blk.length > 4){
+      // try to close current group if possible; if not possible, reshuffle externally
+      return null;
+    }
+    cur = cur.concat(blk);
+    if (cur.length === 4){
+      groups.push(cur);
+      cur = [];
+    }
+  }
+  if (cur.length !== 0) return null;
+  if (groups.length !== K) return null;
+  return groups;
+}
+
+function randomPairingForGroup(group4){
+  // Return two teams from 4 players: [A,B]
+  const g = shuffle(group4);
+  return [[g[0],g[1]],[g[2],g[3]]];
+}
+
+function enforceFixedPairTeams(group4){
+  // If a fixed pair is inside group4, make them a team; else random pairing
+  for (const [a,b] of fixedPairs){
+    if (group4.includes(a) && group4.includes(b)){
+      const others = group4.filter(x => x !== a && x !== b);
+      return [[a,b],[others[0],others[1]]];
+    }
+  }
+  return randomPairingForGroup(group4);
+}
+
+function makeSet(players, courtsSelected){
+  const K = courtsSelected.length;
+  for (let tries=0; tries<200; tries++){
+    const blocks = buildBlocks(players);
+    const groups = fillGroups(blocks, K);
+    if (!groups) continue;
+
     const matches = [];
-    for(const c of courts){
-      const g = pool.splice(0,4);
-      matches.push({court:c, A:[g[0],g[1]], B:[g[2],g[3]]});
+    for (let i=0; i<K; i++){
+      const group4 = groups[i];
+      const teams = enforceFixedPairTeams(group4);
+      matches.push({
+        court: courtsSelected[i],
+        group: group4.slice(),
+        A: teams[0],
+        B: teams[1]
+      });
     }
     return matches;
   }
+  return null;
+}
 
-  function generate(){
-    const msg = document.getElementById("msg");
-    const out = document.getElementById("out");
-    const players = parsePlayers();
-    if(players.length !== 12){
-      msg.textContent = "Need exactly 12 unique player names.";
-      return;
-    }
+function isFixedTeam(team){
+  const k = pairKey(team[0], team[1]);
+  return fixedPairs.some(([a,b]) => pairKey(a,b) === k);
+}
 
-    const s1 = makeSet(players);
-    const used = new Set();
-    for(const m of s1){
-      used.add(key(m.A[0],m.A[1]));
-      used.add(key(m.B[0],m.B[1]));
-    }
+function deriveSetStats(setMatches){
+  // group4 keys, co-occurrence pairs, teammate pairs, opponent pairs
+  const groupKeys = new Set();
+  const coOccur = new Set();
+  const teammates = new Set();
+  const opponents = new Set();
 
-    let s2, tries=0;
-    do{
-      s2 = makeSet(players);
-      tries++;
-      if(tries>300) break;
-    } while (s2.some(m => used.has(key(m.A[0],m.A[1])) || used.has(key(m.B[0],m.B[1]))));
+  for (const m of setMatches){
+    const g = m.group.slice().sort();
+    groupKeys.add(groupKey4(g));
 
-    function render(set, title){
-      let html = `<h3>${title}</h3><table><tr><th>Court</th><th>Team A</th><th>Team B</th></tr>`;
-      for(const m of set){
-        html += `<tr><td>${m.court}</td><td>${m.A.join(" / ")}</td><td>${m.B.join(" / ")}</td></tr>`;
+    // co-occurrence pairs in same group of 4
+    for (let i=0;i<g.length;i++){
+      for (let j=i+1;j<g.length;j++){
+        coOccur.add(pairKey(g[i],g[j]));
       }
-      return html + `</table>`;
     }
 
-    out.innerHTML = render(s1,"Set 1") + render(s2,"Set 2");
-    lastText = out.innerText;
-    msg.textContent = "Generated.";
+    // teammate pairs
+    teammates.add(pairKey(m.A[0],m.A[1]));
+    teammates.add(pairKey(m.B[0],m.B[1]));
+
+    // opponent pairs: cross A x B
+    for (const a of m.A){
+      for (const b of m.B){
+        opponents.add(pairKey(a,b));
+      }
+    }
   }
 
-  document.getElementById("gen").addEventListener("click", generate);
-  document.getElementById("copy").addEventListener("click", async ()=>{
-    try{ await navigator.clipboard.writeText(lastText || ""); }catch(e){}
-  });
-</script>
-</body>
-</html>
+  return { groupKeys, coOccur, teammates, opponents };
+}
+
+function scoreSet2(candidate, set1Stats){
+  // Penalty weights (tunable)
+  const W_GROUP_REPEAT = 1000;     // same exact 4-player group repeated
+  const W_COOCUR = 6;             // met before in same court (pair)
+  const W_TEAM = 10;              // same teammate repeated (non-fixed)
+  const W_OPP = 3;                // same opponents repeated (non-fixed)
+
+  let penalty = 0;
+
+  for (const m of candidate){
+    const gk = groupKey4(m.group.slice().sort());
+    if (set1Stats.groupKeys.has(gk)) penalty += W_GROUP_REPEAT;
+
+    const g = m.group.slice().sort();
+    for (let i=0;i<g.length;i++){
+      for (let j=i+1;j<g.length;j++){
+        if (set1Stats.coOccur.has(pairKey(g[i],g[j]))) penalty += W_COOCUR;
+      }
+    }
+
+    const Ak = pairKey(m.A[0],m.A[1]);
+    const Bk = pairKey(m.B[0],m.B[1]);
+    if (!isFixedTeam(m.A) && set1Stats.teammates.has(Ak)) penalty += W_TEAM;
+    if (!isFixedTeam(m.B) && set1Stats.teammates.has(Bk)) penalty += W_TEAM;
+
+    // opponents
+    for (const a of m.A){
+      for (const b of m.B){
+        const ok = pairKey(a,b);
+        // if this opponent pair happened before, penalize (fixed team doesn't exempt opponent repeats, but lighter)
+        if (set1Stats.opponents.has(ok)) penalty += W_OPP;
+      }
+    }
+  }
+
+  return penalty;
+}
+
+function generateSchedule(){
+  const status = document.getElementById("status");
+  const output = document.getElementById("output");
+
+  const courtsSelected = Array.from(selectedCourts).sort((a,b)=>a.localeCompare(b));
+  const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
+  const need = courtsSelected.length * 4;
+
+  if (courtsSelected.length === 0){
+    setStatus("Select at least 1 court.", "warn");
+    return;
+  }
+  if (players.length !== need){
+    setStatus(`Invalid: need ${need} players for ${courtsSelected.length} courts.`, "warn");
+    return;
+  }
+
+  validateFixedPairsAgainstSelection();
+
+  // Build Set 1
+  const set1 = makeSet(players, courtsSelected);
+  if (!set1){
+    setStatus("Failed to build Set 1. Try again (or remove conflicting fixed pairs).", "warn");
+    return;
+  }
+
+  const stats1 = deriveSetStats(set1);
+
+  // Build Set 2: sample many candidates, choose lowest penalty
+  let best = null;
+  let be
