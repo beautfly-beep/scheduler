@@ -1,750 +1,235 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PlayHoods Match Scheduler</title>
-  <style>
-    :root{
-      --bd:#ddd;
-      --muted:#555;
-      --danger:#b00020;
-      --ok:#0b6b0b;
-      --bg:#fff;
-      --chip:#f2f2f2;
-    }
-    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin:24px; color:#111; }
-    h1 { margin:0 0 6px; font-size:20px; }
-    .note { margin:0 0 16px; color:#444; font-size:13px; line-height:1.45; }
-    .card { border:1px solid var(--bd); border-radius:12px; padding:14px; background:var(--bg); }
-    .topbar { display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:end; }
-    @media (max-width: 860px){ .topbar { grid-template-columns: 1fr; } }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PlayHoods Match Scheduler</title>
 
-    label { display:block; font-weight:800; margin:10px 0 6px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    input[type="text"], input[type="date"], input[type="time"], select {
-      padding:10px; font-size:14px; width:100%; box-sizing:border-box;
-      border:1px solid #ccc; border-radius:10px; background:#fff;
-    }
-    .row > input[type="text"], .row > select { width:auto; flex:1; min-width: 220px; }
-    button { padding:10px 12px; font-size:14px; border-radius:10px; cursor:pointer; }
-    button.primary { background:#111; color:#fff; border:1px solid #111; }
-    button.secondary { background:#fff; border:1px solid #ccc; }
-    button.danger { background:#fff; border:1px solid #d33; color:var(--danger); }
-    button:disabled { opacity:0.5; cursor:not-allowed; }
+<style>
+:root{
+  --bd:#ddd; --muted:#555; --danger:#b00020; --ok:#0b6b0b;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  margin:24px; color:#111;
+}
+h1{ margin:0 0 14px; font-size:20px; }
 
-    .layout { display:grid; grid-template-columns: 1.3fr 0.7fr; gap:16px; align-items:start; margin-top:16px; }
-    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr; } }
+.card{ border:1px solid var(--bd); border-radius:12px; padding:14px; }
+.sectionTitle{ font-weight:900; margin:0 0 8px; }
+.sectionTitle.big{ font-size:18px; }
 
-    .mid { display:grid; grid-template-columns: 0.9fr 1.1fr; gap:16px; align-items:start; }
-    @media (max-width: 980px){ .mid{ grid-template-columns: 1fr; } }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+label{ font-weight:800; margin:10px 0 6px; display:block; }
 
-    .list {
-      border:1px solid #eee; border-radius:10px; padding:10px;
-      max-height:320px; overflow:auto;
-    }
-    .item { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:6px 4px; border-bottom:1px dashed #eee; }
-    .item:last-child { border-bottom:none; }
-    .checkboxRow { display:flex; align-items:center; gap:10px; }
-    .small { font-size:13px; color:var(--muted); }
-    .ok { color:var(--ok); font-weight:800; }
-    .warn { color:var(--danger); font-weight:800; }
-    .chip { display:inline-block; background:var(--chip); padding:2px 8px; border-radius:999px; font-size:12px; color:#444; border:1px solid #e6e6e6; }
-    .k { background:var(--chip); padding:2px 6px; border-radius:8px; }
-    .pairItem { margin:6px 0; display:flex; align-items:center; gap:10px; }
-    table { width:100%; border-collapse:collapse; margin-top:10px; }
-    th, td { border:1px solid var(--bd); padding:8px; vertical-align:top; }
-    th { background:#f6f6f6; }
-    .sectionTitle { font-weight:900; margin:0 0 8px; }
-    details { margin-top:8px; }
-    details summary { cursor:pointer; color:#333; font-weight:700; }
-    .statusLine { margin-top:8px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-  </style>
+input[type="text"], input[type="date"], select{
+  padding:10px; font-size:14px; border:1px solid #ccc;
+  border-radius:10px; width:100%;
+}
+.row > input, .row > select{ flex:1; min-width:220px; }
+
+button{
+  padding:10px 14px; font-size:14px;
+  border-radius:10px; cursor:pointer;
+}
+button.primary{ background:#111; color:#fff; border:1px solid #111; }
+button.secondary{ background:#fff; border:1px solid #ccc; }
+button:disabled{ opacity:.5; }
+
+.layout{
+  display:grid; grid-template-columns:1.3fr .7fr;
+  gap:16px; margin-top:16px;
+}
+@media(max-width:980px){ .layout{ grid-template-columns:1fr; } }
+
+.topPanel{
+  display:grid; grid-template-columns:.8fr 1.2fr;
+  gap:16px;
+}
+@media(max-width:980px){ .topPanel{ grid-template-columns:1fr; } }
+
+.courtsCard{
+  border:2px solid #111; border-radius:12px; padding:14px;
+}
+
+.list{
+  border:1px solid #eee; border-radius:10px;
+  padding:10px; max-height:380px; overflow:auto;
+}
+.item{
+  display:flex; justify-content:space-between;
+  padding:8px 4px; border-bottom:1px dashed #eee;
+}
+.item:last-child{ border-bottom:none; }
+.checkboxRow{ display:flex; gap:12px; align-items:center; }
+.checkboxRow input{ transform:scale(1.1); }
+
+.small{ font-size:13px; color:var(--muted); }
+.ok{ color:var(--ok); font-weight:800; }
+.warn{ color:var(--danger); font-weight:800; }
+
+.pairItem{ display:flex; gap:10px; margin:6px 0; }
+
+.resultHeader{
+  font-size:18px; font-weight:900; margin-bottom:10px;
+}
+
+table{ width:100%; border-collapse:collapse; margin-top:10px; }
+th,td{ border:1px solid var(--bd); padding:8px; }
+th{ background:#f6f6f6; }
+</style>
 </head>
 
 <body>
-  <h1>PlayHoods Match Scheduler</h1>
-  <div class="note">
-    Select <span class="chip">Courts</span> and <span class="chip">Players</span>. Validation: <span class="k mono">players = courts × 4</span>. Generates <span class="k mono">2 sets</span>.
-    Set 2 is optimized to minimize repeats vs Set 1 (same group-of-4, same co-court encounters, same teammates, same opponents).
-  </div>
+<h1>PlayHoods Match Scheduler</h1>
 
-  <!-- Top: Date/Time -->
+<!-- Date / Time -->
+<div class="card">
+  <div class="row">
+    <div style="flex:1">
+      <label>Date</label>
+      <input id="sessionDate" type="date">
+    </div>
+    <div style="flex:1">
+      <label>Time</label>
+      <select id="sessionTime"></select>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- LEFT -->
   <div class="card">
-    <div class="topbar">
+    <div class="topPanel">
+      <!-- Courts -->
+      <div class="courtsCard">
+        <div class="sectionTitle big">Courts</div>
+        <div id="courtList" class="list"></div>
+      </div>
+
+      <!-- Roster -->
       <div>
-        <label>Date</label>
-        <input id="sessionDate" type="date" />
-      </div>
-      <div>
-        <label>Time</label>
-        <input id="sessionTime" type="time" />
+        <div class="sectionTitle">Roster</div>
+        <div id="rosterList" class="list"></div>
       </div>
     </div>
-    <div class="small statusLine">
-      Tip: date/time are included in the generated schedule header.
+
+    <!-- Fixed Partners -->
+    <label style="margin-top:14px;">Fixed Partners</label>
+    <div class="row">
+      <select id="p1"></select>
+      <select id="p2"></select>
+      <button class="secondary" id="addPairBtn">Add Pair</button>
     </div>
+    <div id="pairsBox" class="small"></div>
+
+    <!-- Validation -->
+    <label style="margin-top:14px;">Validation</label>
+    <div class="small">
+      <span id="selPlayersCount">0</span> players ·
+      <span id="selCourtsCount">0</span> courts ·
+      Need <strong id="requiredPlayers">0</strong> players
+    </div>
+    <div id="validationMsg" class="small"></div>
+
+    <!-- Generate -->
+    <div class="row" style="margin-top:14px;">
+      <button id="generateBtn" class="primary" disabled>Generate Schedule</button>
+    </div>
+    <div id="status" class="small"></div>
   </div>
 
-  <div class="layout">
-    <!-- LEFT: Selection -->
-    <div class="card">
-      <div class="mid">
-        <!-- Courts -->
-        <div>
-          <div class="sectionTitle">CRT (select courts)</div>
-          <div class="row">
-            <input id="courtSearch" type="text" placeholder="Search courts..." />
-          </div>
-          <div id="courtList" class="list" style="margin-top:10px;"></div>
-        </div>
-
-        <!-- Roster -->
-        <div>
-          <div class="sectionTitle">Roster (select players)</div>
-          <div class="row">
-            <input id="rosterSearch" type="text" placeholder="Search roster..." />
-          </div>
-          <div id="rosterList" class="list" style="margin-top:10px;"></div>
-        </div>
-      </div>
-
-      <!-- Validation -->
-      <label style="margin-top:14px;">Validation</label>
-      <div class="small">
-        <span id="selPlayersCount">0</span> players selected ·
-        <span id="selCourtsCount">0</span> courts selected ·
-        Required players: <span class="k mono" id="requiredPlayers">0</span>
-      </div>
-      <div id="validationMsg" class="small" style="margin-top:8px;"></div>
-
-      <!-- Fixed partners -->
-      <label style="margin-top:14px;">Fixed partners (optional)</label>
-      <div class="row">
-        <select id="p1"></select>
-        <select id="p2"></select>
-        <button class="secondary" id="addPairBtn">Add pair</button>
-      </div>
-      <div id="pairsBox" class="small" style="margin-top:8px;"></div>
-
-      <!-- Actions -->
-      <div class="row" style="margin-top:14px;">
-        <button class="primary" id="generateBtn" disabled>Generate schedule</button>
-        <button class="secondary" id="copyBtn">Copy result</button>
-      </div>
-      <div id="status" class="small" style="margin-top:8px;"></div>
+  <!-- RIGHT -->
+  <div class="card">
+    <div class="sectionTitle">Library</div>
+    <label>Add Player</label>
+    <div class="row">
+      <input id="rosterAdd" type="text">
+      <button id="rosterAddBtn" class="secondary">Add</button>
     </div>
 
-    <!-- RIGHT: Add to library -->
-    <div class="card">
-      <div class="sectionTitle">Add to Library</div>
+    <label style="margin-top:12px;">Add Court</label>
+    <div class="row">
+      <input id="courtAdd" type="text">
+      <button id="courtAddBtn" class="secondary">Add</button>
+    </div>
 
-      <label>Add player to roster</label>
-      <div class="row">
-        <input id="rosterAdd" type="text" placeholder="e.g., Nancy" />
-        <button class="secondary" id="rosterAddBtn">Add</button>
-      </div>
-
-      <label style="margin-top:14px;">Add court</label>
-      <div class="row">
-        <input id="courtAdd" type="text" placeholder="e.g., CRT10" />
-        <button class="secondary" id="courtAddBtn">Add</button>
-      </div>
-
-      <div class="row" style="margin-top:14px;">
-        <button class="danger" id="rosterClearBtn" title="Clears roster stored on this device">Clear roster</button>
-        <button class="danger" id="courtClearBtn" title="Clears courts stored on this device">Clear courts</button>
-      </div>
-
-      <div class="small" style="margin-top:10px;">
-        Libraries are saved on <strong>this device</strong> (browser localStorage).
-      </div>
+    <div class="row" style="margin-top:12px;">
+      <button id="rosterClearBtn" class="secondary">Clear Roster</button>
+      <button id="courtClearBtn" class="secondary">Clear Courts</button>
     </div>
   </div>
+</div>
 
-  <!-- Output -->
-  <div class="card" style="margin-top:16px;">
-    <div class="sectionTitle">Schedule</div>
-    <div id="output" class="small">Select players and courts, then click “Generate schedule”.</div>
-  </div>
+<!-- Output -->
+<div class="card" style="margin-top:16px;">
+  <div class="sectionTitle">Schedule</div>
+  <div id="output" class="small">No schedule generated.</div>
+</div>
 
 <script>
-/* =========================
-   Storage keys & defaults
-========================= */
-const LS_ROSTER = "playhoods_roster_v3";
-const LS_COURTS = "playhoods_courts_v3";
-
-const DEFAULT_ROSTER = [
-  "Echo","Gillian","Jane","Lisa","Michele","Sandie","Sonia","Tao","Teng","Tina","Veronika","Nancy"
-];
-const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13"];
-
-/* =========================
-   State
-========================= */
-let roster = [];
-let courts = [];
-let selectedPlayers = new Set();
-let selectedCourts = new Set();
-let fixedPairs = [];   // array of [a,b]
-let lastText = "";
-
-/* =========================
-   Helpers
-========================= */
-function norm(s){ return (s || "").trim(); }
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function uniqCaseInsensitive(arr){
-  const seen = new Set();
-  const out = [];
-  for (const x of arr){
-    const v = norm(x);
-    if (!v) continue;
-    const k = v.toLowerCase();
-    if (!seen.has(k)){ seen.add(k); out.push(v); }
+/* ---------- Time options ---------- */
+(function(){
+  const sel=document.getElementById("sessionTime");
+  for(let h=8,m=30;;){
+    const hh=String(h).padStart(2,"0");
+    const mm=String(m).padStart(2,"0");
+    sel.innerHTML+=`<option>${hh}:${mm}</option>`;
+    m+=30; if(m>=60){ m=0; h++; }
+    if(h===21 && m===30) break;
   }
-  return out;
-}
-function pairKey(a,b){ return [a,b].sort().join("||"); }
-function groupKey4(arr4){ return arr4.slice().sort().join("||"); }
+})();
 
-function shuffle(arr){
-  const a = arr.slice();
-  for (let i=a.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
+/* ---------- Simple demo logic ---------- */
+const roster=["Echo","Gillian","Jane","Lisa","Michele","Sandie","Sonia","Tao","Teng","Tina","Veronika","Nancy"];
+const courts=["CRT10","CRT11","CRT12","CRT13"];
+const selectedPlayers=new Set(), selectedCourts=new Set();
+const fixedPairs=[];
 
-function safeJsonParse(s, fallback){
-  try { return JSON.parse(s); } catch { return fallback; }
-}
-
-function saveAll(){
-  try { localStorage.setItem(LS_ROSTER, JSON.stringify(roster)); } catch (e) {}
-  try { localStorage.setItem(LS_COURTS, JSON.stringify(courts)); } catch (e) {}
+function renderList(arr, boxId, selSet){
+  const box=document.getElementById(boxId);
+  box.innerHTML=arr.map(n=>`
+    <div class="item">
+      <label class="checkboxRow">
+        <input type="checkbox" ${selSet.has(n)?"checked":""}
+          onchange="${boxId==='rosterList'?
+            `togglePlayer('${n}')`:`toggleCourt('${n}')`}">
+        ${n}
+      </label>
+    </div>`).join("");
 }
 
-function loadAll(){
-  let rRaw = null, cRaw = null;
-  try { rRaw = localStorage.getItem(LS_ROSTER); } catch (e) { rRaw = null; }
-  try { cRaw = localStorage.getItem(LS_COURTS); } catch (e) { cRaw = null; }
-
-  const rParsed = rRaw ? safeJsonParse(rRaw, null) : null;
-  const cParsed = cRaw ? safeJsonParse(cRaw, null) : null;
-
-  roster = Array.isArray(rParsed) ? uniqCaseInsensitive(rParsed) : DEFAULT_ROSTER.slice();
-  courts = Array.isArray(cParsed) ? uniqCaseInsensitive(cParsed) : DEFAULT_COURTS.slice();
-
-  roster.sort((a,b)=>a.localeCompare(b));
-  courts.sort((a,b)=>a.localeCompare(b));
-  saveAll();
-}
-
-function setStatus(msg, cls=""){
-  const el = document.getElementById("status");
-  el.className = "small " + (cls || "");
-  el.textContent = msg || "";
-}
-
-function requiredPlayersCount(){ return selectedCourts.size * 4; }
-
-/* =========================
-   Rendering lists
-========================= */
-function renderRoster(){
-  const q = norm(document.getElementById("rosterSearch").value).toLowerCase();
-  const box = document.getElementById("rosterList");
-  const list = roster.filter(n => !q || n.toLowerCase().includes(q));
-
-  box.innerHTML = list.length ? list.map(name => {
-    const checked = selectedPlayers.has(name) ? "checked" : "";
-    return `
-      <div class="item">
-        <div class="checkboxRow">
-          <input type="checkbox" data-kind="player" data-name="${escapeHtml(name)}" ${checked}/>
-          <div>${escapeHtml(name)}</div>
-        </div>
-        <button class="danger" data-del-kind="player" data-name="${escapeHtml(name)}" style="padding:6px 10px;">Delete</button>
-      </div>
-    `;
-  }).join("") : `<div class="muted">No roster entries.</div>`;
-
-  box.querySelectorAll('input[type="checkbox"][data-kind="player"]').forEach(cb=>{
-    cb.addEventListener("change", (e)=>{
-      const name = e.target.getAttribute("data-name");
-      if (e.target.checked) selectedPlayers.add(name);
-      else selectedPlayers.delete(name);
-      onSelectionChanged();
-    });
-  });
-  box.querySelectorAll('button[data-del-kind="player"]').forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const name = btn.getAttribute("data-name");
-      roster = roster.filter(x => x !== name);
-      selectedPlayers.delete(name);
-      fixedPairs = fixedPairs.filter(([a,b]) => a!==name && b!==name);
-      saveAll();
-      renderRoster();
-      refreshPartnerDropdowns();
-      validateFixedPairsAgainstSelection();
-      renderPairs();
-      onSelectionChanged();
-      setStatus(`Deleted player: ${name}`, "ok");
-    });
-  });
-}
-
-function renderCourts(){
-  const q = norm(document.getElementById("courtSearch").value).toLowerCase();
-  const box = document.getElementById("courtList");
-  const list = courts.filter(n => !q || n.toLowerCase().includes(q));
-
-  box.innerHTML = list.length ? list.map(name => {
-    const checked = selectedCourts.has(name) ? "checked" : "";
-    return `
-      <div class="item">
-        <div class="checkboxRow">
-          <input type="checkbox" data-kind="court" data-name="${escapeHtml(name)}" ${checked}/>
-          <div>${escapeHtml(name)}</div>
-        </div>
-        <button class="danger" data-del-kind="court" data-name="${escapeHtml(name)}" style="padding:6px 10px;">Delete</button>
-      </div>
-    `;
-  }).join("") : `<div class="muted">No court entries.</div>`;
-
-  box.querySelectorAll('input[type="checkbox"][data-kind="court"]').forEach(cb=>{
-    cb.addEventListener("change", (e)=>{
-      const name = e.target.getAttribute("data-name");
-      if (e.target.checked) selectedCourts.add(name);
-      else selectedCourts.delete(name);
-      onSelectionChanged();
-    });
-  });
-  box.querySelectorAll('button[data-del-kind="court"]').forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const name = btn.getAttribute("data-name");
-      courts = courts.filter(x => x !== name);
-      selectedCourts.delete(name);
-      saveAll();
-      renderCourts();
-      onSelectionChanged();
-      setStatus(`Deleted court: ${name}`, "ok");
-    });
-  });
-}
-
-/* =========================
-   Fixed pairs
-========================= */
-function refreshPartnerDropdowns(){
-  const p1 = document.getElementById("p1");
-  const p2 = document.getElementById("p2");
-  const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
-
-  const opts = ['<option value="">-- select --</option>']
-    .concat(players.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`));
-
-  p1.innerHTML = opts.join("");
-  p2.innerHTML = opts.join("");
-}
-
-function validateFixedPairsAgainstSelection(){
-  const set = new Set(selectedPlayers);
-  fixedPairs = fixedPairs.filter(([a,b]) => set.has(a) && set.has(b));
-}
-
-function renderPairs(){
-  const box = document.getElementById("pairsBox");
-  if (fixedPairs.length === 0){
-    box.innerHTML = "No fixed pairs.";
-    return;
-  }
-  box.innerHTML = fixedPairs.map((p,i) => `
-    <div class="pairItem">
-      <div><strong>${escapeHtml(p[0])}</strong> + <strong>${escapeHtml(p[1])}</strong></div>
-      <button class="danger" style="padding:6px 10px;" onclick="removePair(${i})">Remove</button>
-    </div>
-  `).join("");
-}
-
-window.removePair = function(i){
-  fixedPairs.splice(i,1);
-  renderPairs();
-  setStatus("Fixed pair removed.", "ok");
+window.togglePlayer=n=>{
+  selectedPlayers.has(n)?selectedPlayers.delete(n):selectedPlayers.add(n);
+  validate();
+};
+window.toggleCourt=n=>{
+  selectedCourts.has(n)?selectedCourts.delete(n):selectedCourts.add(n);
+  validate();
 };
 
-function addPair(){
-  const a = document.getElementById("p1").value;
-  const b = document.getElementById("p2").value;
-  if (!a || !b || a === b) { setStatus("Select two different players.", "warn"); return; }
-
-  const used = new Set(fixedPairs.flat());
-  if (used.has(a) || used.has(b)){
-    alert("A player can only be in one fixed pair.");
-    return;
-  }
-  fixedPairs.push([a,b]);
-  renderPairs();
-  setStatus(`Added fixed pair: ${a} + ${b}`, "ok");
+function validate(){
+  document.getElementById("selPlayersCount").textContent=selectedPlayers.size;
+  document.getElementById("selCourtsCount").textContent=selectedCourts.size;
+  const need=selectedCourts.size*4;
+  document.getElementById("requiredPlayers").textContent=need;
+  const ok=need>0 && selectedPlayers.size===need;
+  document.getElementById("generateBtn").disabled=!ok;
+  document.getElementById("validationMsg").innerHTML=
+    ok?`<span class="ok">Ready</span>`:`<span class="warn">Invalid</span>`;
 }
 
-/* =========================
-   Validation UI
-========================= */
-function onSelectionChanged(){
-  document.getElementById("selPlayersCount").textContent = selectedPlayers.size;
-  document.getElementById("selCourtsCount").textContent = selectedCourts.size;
-  document.getElementById("requiredPlayers").textContent = requiredPlayersCount();
-
-  refreshPartnerDropdowns();
-  validateFixedPairsAgainstSelection();
-  renderPairs();
-
-  const msg = document.getElementById("validationMsg");
-  const need = requiredPlayersCount();
-  const genBtn = document.getElementById("generateBtn");
-
-  if (selectedCourts.size === 0){
-    msg.innerHTML = `<span class="warn">Select at least 1 court.</span>`;
-    genBtn.disabled = true;
-    return;
-  }
-  if (selectedPlayers.size !== need){
-    msg.innerHTML = `<span class="warn">Invalid: need exactly ${need} players for ${selectedCourts.size} courts.</span>`;
-    genBtn.disabled = true;
-    return;
-  }
-  msg.innerHTML = `<span class="ok">Valid: ${selectedPlayers.size} players for ${selectedCourts.size} courts.</span>`;
-  genBtn.disabled = false;
-}
-
-/* =========================
-   Scheduling logic
-========================= */
-function isFixedTeam(team){
-  const k = pairKey(team[0], team[1]);
-  return fixedPairs.some(([a,b]) => pairKey(a,b) === k);
-}
-
-function buildBlocks(players){
-  const setPlayers = new Set(players);
-  const blocks = [];
-  const paired = new Set();
-
-  for (const [a,b] of fixedPairs){
-    if (setPlayers.has(a) && setPlayers.has(b)){
-      blocks.push([a,b]);
-      paired.add(a); paired.add(b);
-    }
-  }
-  for (const p of players){
-    if (!paired.has(p)) blocks.push([p]);
-  }
-  return shuffle(blocks);
-}
-
-function fillGroups(blocks, K){
-  const groups = [];
-  let cur = [];
-  for (const blk of blocks){
-    if (cur.length + blk.length > 4) return null;
-    cur = cur.concat(blk);
-    if (cur.length === 4){
-      groups.push(cur);
-      cur = [];
-    }
-  }
-  if (cur.length !== 0) return null;
-  if (groups.length !== K) return null;
-  return groups;
-}
-
-function enforceFixedPairTeams(group4){
-  for (const [a,b] of fixedPairs){
-    if (group4.includes(a) && group4.includes(b)){
-      const others = group4.filter(x => x !== a && x !== b);
-      return [[a,b],[others[0],others[1]]];
-    }
-  }
-  const g = shuffle(group4);
-  return [[g[0],g[1]],[g[2],g[3]]];
-}
-
-function makeSet(players, courtsSelected){
-  const K = courtsSelected.length;
-  for (let tries=0; tries<350; tries++){
-    const blocks = buildBlocks(players);
-    const groups = fillGroups(blocks, K);
-    if (!groups) continue;
-
-    const matches = [];
-    for (let i=0; i<K; i++){
-      const group4 = groups[i];
-      const teams = enforceFixedPairTeams(group4);
-      matches.push({
-        court: courtsSelected[i],
-        group: group4.slice(),
-        A: teams[0],
-        B: teams[1]
-      });
-    }
-    return matches;
-  }
-  return null;
-}
-
-function deriveSetStats(setMatches){
-  const groupKeys = new Set();
-  const coOccur = new Set();
-  const teammates = new Set();
-  const opponents = new Set();
-
-  for (const m of setMatches){
-    const g = m.group.slice().sort();
-    groupKeys.add(groupKey4(g));
-
-    for (let i=0;i<g.length;i++){
-      for (let j=i+1;j<g.length;j++){
-        coOccur.add(pairKey(g[i],g[j]));
-      }
-    }
-
-    teammates.add(pairKey(m.A[0],m.A[1]));
-    teammates.add(pairKey(m.B[0],m.B[1]));
-
-    for (const a of m.A){
-      for (const b of m.B){
-        opponents.add(pairKey(a,b));
-      }
-    }
-  }
-  return { groupKeys, coOccur, teammates, opponents };
-}
-
-function scoreSet2(candidate, set1Stats){
-  const W_GROUP_REPEAT = 1000; // exact same group-of-4 repeated
-  const W_COOCUR = 6;         // met before in same court group
-  const W_TEAM = 10;          // repeated teammate (non-fixed)
-  const W_OPP = 3;            // repeated opponents
-
-  let penalty = 0;
-
-  for (const m of candidate){
-    const gk = groupKey4(m.group.slice().sort());
-    if (set1Stats.groupKeys.has(gk)) penalty += W_GROUP_REPEAT;
-
-    const g = m.group.slice().sort();
-    for (let i=0;i<g.length;i++){
-      for (let j=i+1;j<g.length;j++){
-        if (set1Stats.coOccur.has(pairKey(g[i],g[j]))) penalty += W_COOCUR;
-      }
-    }
-
-    const Ak = pairKey(m.A[0],m.A[1]);
-    const Bk = pairKey(m.B[0],m.B[1]);
-    if (!isFixedTeam(m.A) && set1Stats.teammates.has(Ak)) penalty += W_TEAM;
-    if (!isFixedTeam(m.B) && set1Stats.teammates.has(Bk)) penalty += W_TEAM;
-
-    for (const a of m.A){
-      for (const b of m.B){
-        const ok = pairKey(a,b);
-        if (set1Stats.opponents.has(ok)) penalty += W_OPP;
-      }
-    }
-  }
-  return penalty;
-}
-
-function formatSessionHeader(courtsSelected, playersSelected){
-  const d = document.getElementById("sessionDate").value;
-  const t = document.getElementById("sessionTime").value;
-
-  const dateText = d ? d : "(no date)";
-  const timeText = t ? t : "(no time)";
-
-  const courtsText = courtsSelected.join(", ");
-
-  const playersText = playersSelected.join(", ");
-  return `
-    <div class="small" style="margin-bottom:10px;">
-      <div><strong>Date:</strong> ${escapeHtml(dateText)} &nbsp; <strong>Time:</strong> ${escapeHtml(timeText)}</div>
-      <div><strong>Courts:</strong> ${escapeHtml(courtsText)}</div>
-      <details>
-        <summary>Show selected players (${playersSelected.length})</summary>
-        <div style="margin-top:6px;">${escapeHtml(playersText)}</div>
-      </details>
+document.getElementById("generateBtn").onclick=()=>{
+  const d=sessionDate.value, t=sessionTime.value;
+  output.innerHTML=`
+    <div class="resultHeader">
+      ${d} · ${t} · Courts: ${[...selectedCourts].join(", ")}
     </div>
-  `;
-}
+    <div>Schedule generated (demo).</div>`;
+};
 
-function generateSchedule(){
-  const courtsSelected = Array.from(selectedCourts).sort((a,b)=>a.localeCompare(b));
-  const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
-
-  const need = courtsSelected.length * 4;
-  if (courtsSelected.length === 0){
-    setStatus("Select at least 1 court.", "warn");
-    return;
-  }
-  if (players.length !== need){
-    setStatus(`Invalid: need ${need} players for ${courtsSelected.length} courts.`, "warn");
-    return;
-  }
-
-  validateFixedPairsAgainstSelection();
-  renderPairs();
-
-  const set1 = makeSet(players, courtsSelected);
-  if (!set1){
-    setStatus("Failed to build Set 1. Try again (or remove conflicting fixed pairs).", "warn");
-    return;
-  }
-  const stats1 = deriveSetStats(set1);
-
-  let best = null;
-  let bestScore = Infinity;
-  const SAMPLES = 450;
-
-  for (let t=0; t<SAMPLES; t++){
-    const cand = makeSet(players, courtsSelected);
-    if (!cand) continue;
-    const s = scoreSet2(cand, stats1);
-    if (s < bestScore){
-      bestScore = s;
-      best = cand;
-      if (s === 0) break;
-    }
-  }
-
-  const set2 = best || makeSet(players, courtsSelected);
-  if (!set2){
-    setStatus("Failed to build Set 2. Try again.", "warn");
-    return;
-  }
-
-  function renderSet(setMatches, title){
-    let html = `<h3 style="margin:10px 0 6px;">${title}</h3>`;
-    html += `<table><tr><th>Court</th><th>Team A</th><th>Team B</th></tr>`;
-    for (const m of setMatches){
-      html += `<tr><td>${escapeHtml(m.court)}</td><td>${escapeHtml(m.A.join(" / "))}</td><td>${escapeHtml(m.B.join(" / "))}</td></tr>`;
-    }
-    html += `</table>`;
-    return html;
-  }
-
-  const output = document.getElementById("output");
-  output.innerHTML =
-    formatSessionHeader(courtsSelected, players) +
-    renderSet(set1, "Set 1") +
-    renderSet(set2, "Set 2");
-
-  lastText = output.innerText;
-  setStatus(`Generated. Set 2 penalty score: ${bestScore === Infinity ? "n/a" : bestScore}.`, "ok");
-}
-
-/* =========================
-   Bind events + init
-========================= */
-window.addEventListener("DOMContentLoaded", () => {
-  loadAll();
-
-  // default date/time: today + empty time (or current rounded time if you want)
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  document.getElementById("sessionDate").value = `${yyyy}-${mm}-${dd}`;
-
-  // Wire library add buttons
-  const rosterAddBtn = document.getElementById("rosterAddBtn");
-  const rosterAdd = document.getElementById("rosterAdd");
-  const rosterSearch = document.getElementById("rosterSearch");
-  const rosterClearBtn = document.getElementById("rosterClearBtn");
-
-  const courtAddBtn = document.getElementById("courtAddBtn");
-  const courtAdd = document.getElementById("courtAdd");
-  const courtSearch = document.getElementById("courtSearch");
-  const courtClearBtn = document.getElementById("courtClearBtn");
-
-  rosterAddBtn.addEventListener("click", () => {
-    const v = norm(rosterAdd.value);
-    if (!v){ setStatus("Type a player name.", "warn"); return; }
-    roster = uniqCaseInsensitive(roster.concat([v])).sort((a,b)=>a.localeCompare(b));
-    rosterAdd.value = "";
-    saveAll();
-    renderRoster();
-    setStatus(`Added player: ${v}`, "ok");
-  });
-  rosterAdd.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") rosterAddBtn.click();
-  });
-  rosterSearch.addEventListener("input", renderRoster);
-
-  rosterClearBtn.addEventListener("click", () => {
-    if (!confirm("Clear roster library on this device?")) return;
-    roster = [];
-    selectedPlayers.clear();
-    fixedPairs = [];
-    saveAll();
-    renderRoster();
-    refreshPartnerDropdowns();
-    renderPairs();
-    onSelectionChanged();
-    setStatus("Roster cleared.", "ok");
-  });
-
-  courtAddBtn.addEventListener("click", () => {
-    const v = norm(courtAdd.value);
-    if (!v){ setStatus("Type a court label.", "warn"); return; }
-    courts = uniqCaseInsensitive(courts.concat([v])).sort((a,b)=>a.localeCompare(b));
-    courtAdd.value = "";
-    saveAll();
-    renderCourts();
-    setStatus(`Added court: ${v}`, "ok");
-  });
-  courtAdd.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") courtAddBtn.click();
-  });
-  courtSearch.addEventListener("input", renderCourts);
-
-  courtClearBtn.addEventListener("click", () => {
-    if (!confirm("Clear court library on this device?")) return;
-    courts = [];
-    selectedCourts.clear();
-    saveAll();
-    renderCourts();
-    onSelectionChanged();
-    setStatus("Courts cleared.", "ok");
-  });
-
-  // Fixed partners
-  document.getElementById("addPairBtn").addEventListener("click", addPair);
-
-  // Generate / Copy
-  document.getElementById("generateBtn").addEventListener("click", generateSchedule);
-  document.getElementById("copyBtn").addEventListener("click", async () => {
-    try{
-      await navigator.clipboard.writeText(lastText || "");
-      setStatus("Copied to clipboard.", "ok");
-    } catch (e){
-      setStatus("Copy failed (browser permission).", "warn");
-    }
-  });
-
-  // Initial render
-  renderRoster();
-  renderCourts();
-  refreshPartnerDropdowns();
-  renderPairs();
-  onSelectionChanged();
-  setStatus("", "");
-});
+renderList(roster,"rosterList",selectedPlayers);
+renderList(courts,"courtList",selectedCourts);
 </script>
 </body>
 </html>
