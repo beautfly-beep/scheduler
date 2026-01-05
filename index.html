@@ -1,0 +1,34 @@
+const DEFAULT_FILL_NAME = "Jane";
+
+function fillToTwelve(names) {
+  const seen = new Set(names.map(n => n.toLowerCase()));
+  while (names.length < 12) {
+    // 优先补 Jane
+    if (!seen.has(DEFAULT_FILL_NAME.toLowerCase())) {
+      names.push(DEFAULT_FILL_NAME);
+      seen.add(DEFAULT_FILL_NAME.toLowerCase());
+    } else {
+      // Jane 已存在但仍不足 12：不要乱补，交给 Captain 手动补
+      break;
+    }
+  }
+  return names;
+}
+
+// 在 Extract Names 点击事件中使用：
+const candidates = extractCandidateNames(raw);
+let top = candidates.slice(0, 12);
+
+// 如果不足 12，就自动补 Jane（且不重复）
+if (top.length < 12) top = fillToTwelve(top);
+
+// 填入 Players
+$players.value = top.join("\n");
+if (typeof refreshPlayerDropdowns === "function") refreshPlayerDropdowns();
+
+// 提示
+if (top.length < 12) {
+  setOcrStatus(`Detected ${candidates.length} names. Jane already present; please add missing player(s) manually.`);
+} else {
+  setOcrStatus(`Filled ${top.length} players (auto-filled missing slot with Jane if needed).`);
+}
