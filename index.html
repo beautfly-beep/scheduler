@@ -148,18 +148,34 @@ function shuffle(arr){
   return a;
 }
 
+function safeJsonParse(s, fallback){
+  try { return JSON.parse(s); } catch { return fallback; }
+}
+
 function saveAll(){
-  localStorage.setItem(LS_ROSTER, JSON.stringify(roster));
-  localStorage.setItem(LS_COURTS, JSON.stringify(courts));
+  try { localStorage.setItem(LS_ROSTER, JSON.stringify(roster)); } catch (e) {}
+  try { localStorage.setItem(LS_COURTS, JSON.stringify(courts)); } catch (e) {}
 }
 
 function loadAll(){
-  const r = localStorage.getItem(LS_ROSTER);
-  const c = localStorage.getItem(LS_COURTS);
-  roster = r ? uniq(JSON.parse(r)).sort((a,b)=>a.localeCompare(b)) : DEFAULT_ROSTER.slice().sort((a,b)=>a.localeCompare(b));
-  courts = c ? uniq(JSON.parse(c)).sort((a,b)=>a.localeCompare(b)) : DEFAULT_COURTS.slice().sort((a,b)=>a.localeCompare(b));
+  // If localStorage is blocked/corrupted, we will fall back to defaults.
+  let rRaw = null, cRaw = null;
+  try { rRaw = localStorage.getItem(LS_ROSTER); } catch (e) { rRaw = null; }
+  try { cRaw = localStorage.getItem(LS_COURTS); } catch (e) { cRaw = null; }
+
+  const rParsed = rRaw ? safeJsonParse(rRaw, null) : null;
+  const cParsed = cRaw ? safeJsonParse(cRaw, null) : null;
+
+  roster = Array.isArray(rParsed) ? uniq(rParsed) : DEFAULT_ROSTER.slice();
+  courts = Array.isArray(cParsed) ? uniq(cParsed) : DEFAULT_COURTS.slice();
+
+  roster.sort((a,b)=>a.localeCompare(b));
+  courts.sort((a,b)=>a.localeCompare(b));
+
+  // Try to persist cleaned defaults back; ignore failures.
   saveAll();
 }
+
 
 /* =========================
    Rendering: Roster & Courts
@@ -531,3 +547,4 @@ function generateSchedule(){
   // Build Set 2: sample many candidates, choose lowest penalty
   let best = null;
   let be
+
