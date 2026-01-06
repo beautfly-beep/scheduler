@@ -55,27 +55,48 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
 /* Smaller font for selection area (Courts/Roster lists) */
 .selectionArea{ font-size:13px; color:#222; }
 
+/* Force list to be a real scroll container */
 .list{
-  border:1px solid #eee; border-radius:10px;
-  padding:10px; max-height:360px; overflow:auto;
+  border:1px solid #eee;
+  border-radius:10px;
+  padding:10px;
+  height: 320px;          /* 固定高度：不会因为项目多而把页面撑爆 */
+  overflow-y: auto;       /* 垂直滚动 */
+  overflow-x: hidden;
+  background:#fff;
 }
+
+/* Courts list can be a bit taller to emphasize it */
+.courtsCard .list{
+  height: 360px;          /* Courts 更高一点 */
+}
+
+/* Make each row clearly visible and clickable */
 .item{
-  display:flex; justify-content:space-between;
-  padding:6px 4px; border-bottom:1px dashed #eee;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 6px;
+  border-bottom:1px dashed #eee;
+  line-height: 1.2;
 }
 .item:last-child{ border-bottom:none; }
-.checkboxRow{ display:flex; gap:10px; align-items:center; }
-.checkboxRow input{ transform:scale(1.05); }
 
-.small{ font-size:13px; color:var(--muted); }
-.ok{ color:var(--ok); font-weight:800; }
-.warn{ color:var(--danger); font-weight:800; }
+/* Make the checkbox/label area big enough to tap */
+.checkboxRow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  width:100%;
+  cursor:pointer;
+}
+.checkboxRow input{ transform:scale(1.1); }
 
-.pairItem{ display:flex; gap:10px; margin:6px 0; align-items:center; }
+/* optional: show a more obvious scrollbar in webkit browsers */
+.list::-webkit-scrollbar{ width:10px; }
+.list::-webkit-scrollbar-thumb{ background:#cfcfcf; border-radius:10px; }
+.list::-webkit-scrollbar-track{ background:#f4f4f4; border-radius:10px; }
 
-table{ width:100%; border-collapse:collapse; margin-top:10px; }
-th,td{ border:1px solid var(--bd); padding:8px; }
-th{ background:#f6f6f6; }
 
 /* Bigger font for generated results */
 .resultWrap{ font-size:16px; color:#111; }
@@ -667,6 +688,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
