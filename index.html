@@ -306,7 +306,7 @@ function loadAll(){
   roster = Array.isArray(rParsed) ? uniqCaseInsensitive(rParsed) : DEFAULT_ROSTER.slice();
   courts = Array.isArray(cParsed) ? uniqCaseInsensitive(cParsed) : DEFAULT_COURTS.slice();
   roster.sort((a,b)=>a.localeCompare(b));
-  courts.sort((a,b)=>a.localeCompare(b));
+
   saveAll();
 }
 
@@ -728,6 +728,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
