@@ -68,6 +68,10 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
   overflow-y: auto;       /* 垂直滚动 */
   overflow-x: hidden;
   background:#fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 双列 */
+  column-gap: 12px;
+  row-gap: 4px;  
 }
 
 /* Courts list can be a bit taller to emphasize it */
@@ -78,21 +82,21 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
 /* Make each row clearly visible and clickable */
 .item{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:8px 6px;
+  padding:4px 4px;               /* 原来 8px → 4px */
   border-bottom:1px dashed #eee;
-  line-height: 1.2;
+  line-height:1.1;
 }
 .item:last-child{ border-bottom:none; }
 
 /* Make the checkbox/label area big enough to tap */
 .checkboxRow{
   display:flex;
-  gap:10px;
+  gap:6px;                       /* 原来 10px → 6px */
   align-items:center;
-  width:100%;
   cursor:pointer;
+  width:100%;
+  font-size:13px;
 }
 .checkboxRow input{ transform:scale(1.1); }
 
@@ -692,6 +696,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
