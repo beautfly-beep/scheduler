@@ -114,6 +114,18 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
 .subHeader{
   font-size:15px; margin-bottom:8px; color:#222;
 }
+/* ===== Roster: desktop 4 columns ===== */
+.rosterList{
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ===== Mobile: roster 2 columns ===== */
+@media (max-width: 768px){
+  .rosterList{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 </style>
 </head>
 
@@ -147,7 +159,7 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
       <!-- Roster -->
       <div>
         <div class="sectionTitle">Roster</div>
-        <div id="rosterList" class="list"></div>
+        <div id="rosterList" class="list rosterList"></div>
       </div>
     </div>
 
@@ -728,6 +740,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
