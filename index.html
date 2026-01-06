@@ -54,6 +54,10 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
 
 /* Smaller font for selection area (Courts/Roster lists) */
 .selectionArea{ font-size:13px; color:#222; }
+.small{ font-size:13px; color:var(--muted); }
+.ok{ color:var(--ok); font-weight:800; }
+.warn{ color:var(--danger); font-weight:800; }
+.pairItem{ display:flex; gap:10px; margin:6px 0; align-items:center; }
 
 /* Force list to be a real scroll container */
 .list{
@@ -229,7 +233,7 @@ const LS_COURTS = "Tennis_courts_v4";
 const DEFAULT_ROSTER = [
   "Echo","Gillian","Jane","Lisa","Michele","Sandie","Sonia","Tao","Teng","Tina","Veronika","Nancy"
 ];
-const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13""CRT14","CRT15","CRT16","CRT17","CRT1","CRT2","CRT3","CRT4","CRT5","CRT6","CRT9"];
+const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13","CRT14","CRT15","CRT16","CRT17","CRT1","CRT2","CRT3","CRT4","CRT5","CRT6","CRT9"];
 
 let roster = [];
 let courts = [];
@@ -688,6 +692,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
