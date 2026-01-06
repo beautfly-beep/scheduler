@@ -199,15 +199,9 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
       <button id="rosterAddBtn" class="secondary">Add</button>
     </div>
 
-    <label style="margin-top:12px;">Add Court</label>
-    <div class="row">
-      <input id="courtAdd" type="text" placeholder="e.g., CRT10">
-      <button id="courtAddBtn" class="secondary">Add</button>
-    </div>
 
     <div class="row" style="margin-top:12px;">
       <button id="rosterClearBtn" class="secondary">Clear Roster</button>
-      <button id="courtClearBtn" class="secondary">Clear Courts</button>
     </div>
 
     <div class="small" style="margin-top:10px;">
@@ -265,8 +259,8 @@ const DEFAULT_ROSTER = [
   "Joanne",
   "Karen",
   "Kathy",
-  "Kelly",
-  "Kelley",
+  "Kelly L",
+  "Kelley W",
   "Laura",
   "Lisa K",
   "Lisa W",
@@ -704,15 +698,6 @@ window.addEventListener("DOMContentLoaded", () => {
     setStatus(`Added player: ${v}`, "ok");
   });
 
-  document.getElementById("courtAddBtn").addEventListener("click", () => {
-    const v = norm(document.getElementById("courtAdd").value);
-    if (!v){ setStatus("Type a court label.", "warn"); return; }
-    courts = uniqCaseInsensitive(courts.concat([v])).sort((a,b)=>a.localeCompare(b));
-    document.getElementById("courtAdd").value = "";
-    saveAll();
-    renderCourts();
-    setStatus(`Added court: ${v}`, "ok");
-  });
 
   document.getElementById("rosterClearBtn").addEventListener("click", () => {
     if (!confirm("Clear roster library on this device?")) return;
@@ -727,19 +712,12 @@ window.addEventListener("DOMContentLoaded", () => {
     setStatus("Roster cleared.", "ok");
   });
 
-  document.getElementById("courtClearBtn").addEventListener("click", () => {
-    if (!confirm("Clear courts library on this device?")) return;
-    courts = [];
-    selectedCourts.clear();
-    saveAll();
-    renderCourts();
-    onSelectionChanged();
-    setStatus("Courts cleared.", "ok");
-  });
+
 });
 </script>
 </body>
 </html>
+
 
 
 
