@@ -16,14 +16,23 @@
   --softGreenBd:#d7ead7;
 }
 
+*{ box-sizing:border-box; }
+
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   margin:24px;
   color:#111;
+  background:#fff;
 }
 h1{ margin:0 0 14px; font-size:20px; }
 
-.card{ border:1px solid var(--bd); border-radius:12px; padding:14px; background:#fff; }
+.card{
+  border:1px solid var(--bd);
+  border-radius:12px;
+  padding:14px;
+  background:#fff;
+  overflow:hidden; /* avoid any accidental overlay */
+}
 .sectionTitle{ font-weight:800; margin:0 0 8px; }
 .small{ font-size:13px; color:var(--muted); }
 .ok{ color:var(--ok); font-weight:800; }
@@ -37,7 +46,6 @@ input[type="text"], input[type="date"], select{
   border:1px solid #ccc;
   border-radius:10px;
   width:100%;
-  box-sizing:border-box;
 }
 
 button{
@@ -51,7 +59,6 @@ button{
 button.secondary{ background:#fff; border:1px solid #ccc; }
 button:disabled{ opacity:.5; cursor:not-allowed; }
 
-/* GREEN Generate button */
 button.generate{
   background:var(--green);
   color:#fff;
@@ -61,13 +68,10 @@ button.generate{
 button.generate:hover{ background:var(--greenDark); border-color:var(--greenDark); }
 button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 
-/* ======= PAGE LAYOUT =======
-Row 1: Left (Date/Time/Courts) | Middle (Players) | Right (Library)
-Row 2: Left+Middle (Summary + Schedule) | (right column not used)
-*/
+/* ======= PAGE LAYOUT ======= */
 .pageGrid{
   display:grid;
-  grid-template-columns: 420px 0.9fr 260px; /* wider left, slightly narrower players */
+  grid-template-columns: 420px 1fr; /* LEFT + (Players+Library merged) */
   gap:16px;
   align-items:start;
 }
@@ -100,13 +104,18 @@ Row 2: Left+Middle (Summary + Schedule) | (right column not used)
   row-gap:4px;
 }
 
-/* Courts list: compact, 2 columns */
 .courtsList{ height:150px; }
 
 /* Players list: 4 cols desktop, 2 cols mobile */
-.playersList{ height:300px; grid-template-columns: repeat(4, 1fr); }
+.playersList{
+  height:320px;
+  grid-template-columns: repeat(4, 1fr);
+}
 @media (max-width: 768px){
-  .playersList{ grid-template-columns: repeat(2, 1fr); height:320px; }
+  .playersList{
+    grid-template-columns: repeat(2, 1fr);
+    height:340px;
+  }
 }
 
 .item{
@@ -131,6 +140,63 @@ Row 2: Left+Middle (Summary + Schedule) | (right column not used)
 .list::-webkit-scrollbar{ width:10px; }
 .list::-webkit-scrollbar-thumb{ background:#cfcfcf; border-radius:10px; }
 .list::-webkit-scrollbar-track{ background:#f4f4f4; border-radius:10px; }
+
+/* ===== Players + Library merged card ===== */
+.playersCard{
+  padding:0; /* we'll control inside spacing */
+}
+.playersCardHeader{
+  padding:14px 14px 10px 14px;
+  border-bottom:1px solid #eee;
+}
+.playersCardBody{
+  padding:10px 14px 12px 14px;
+}
+.playersCardFooter{
+  padding:12px 14px;
+  border-top:1px solid #eee;
+  background:#fafafa;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}
+.footerLeft{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.footerLeft label{
+  margin:0;
+  font-weight:800;
+}
+.footerLeft input{
+  width:280px;
+  max-width:52vw;
+  padding:9px 10px;
+  font-size:13px;
+}
+.footerRight{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.footerRight button{ padding:9px 12px; font-size:13px; }
+
+/* ===== Summary + Schedule row ===== */
+.summaryRow{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns: 420px 1fr; /* align with top: left width + right */
+  gap:16px;
+  align-items:start;
+}
+@media (max-width: 1100px){
+  .summaryRow{ grid-template-columns: 1fr; }
+}
 
 /* ===== Session Summary ===== */
 .summaryCard{
@@ -159,7 +225,6 @@ Row 2: Left+Middle (Summary + Schedule) | (right column not used)
   color:#113311;
 }
 
-/* Fixed partners compact */
 .fixedCard{
   border:1px solid #e6f2e6;
   border-radius:10px;
@@ -170,32 +235,18 @@ Row 2: Left+Middle (Summary + Schedule) | (right column not used)
 }
 .fixedCard .row{ gap:8px; }
 .fixedCard select, .fixedCard button{ font-size:12px; padding:8px 10px; }
+
 .pairItem{ display:flex; gap:8px; margin:6px 0; align-items:center; }
 
-/* Summary line ABOVE buttons */
 #summaryBox{ font-size:13px; line-height:1.4; }
-#summaryBox .ok{ color:var(--ok); font-weight:800; }
 
-/* Schedule output */
+.scheduleCard{ min-height:220px; }
 .resultWrap{ font-size:16px; color:#111; }
 .resultHeader{ font-size:20px; font-weight:900; margin-bottom:10px; }
 .subHeader{ font-size:15px; margin-bottom:8px; color:#222; }
 table{ width:100%; border-collapse:collapse; margin-top:8px; }
 th, td{ border:1px solid #eee; padding:8px; font-size:13px; text-align:left; }
 th{ background:#fafafa; }
-
-/* ===== Summary + Schedule row under top area ===== */
-.summaryRow{
-  grid-column: 1 / 3;   /* span left + middle columns */
-  display:grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap:16px;
-  align-items:start;
-}
-@media (max-width: 1100px){
-  .summaryRow{ grid-column:auto; grid-template-columns: 1fr; }
-}
-.scheduleCard{ min-height:220px; }
 </style>
 </head>
 
@@ -203,7 +254,7 @@ th{ background:#fafafa; }
 <h1>Round Robin Match Scheduler</h1>
 
 <div class="pageGrid">
-  <!-- TOP LEFT: Date/Time + Courts -->
+  <!-- LEFT: Date/Time + Courts -->
   <div class="leftStack">
     <div class="card">
       <label>Date</label>
@@ -219,62 +270,58 @@ th{ background:#fafafa; }
     </div>
   </div>
 
-  <!-- TOP MIDDLE: Players -->
-  <div class="card">
-    <div class="sectionTitle" style="text-align:center;">Players</div>
-    <div id="rosterList" class="list playersList"></div>
-  </div>
-
-  <!-- TOP RIGHT: Library -->
-  <div class="card">
-    <div class="sectionTitle">Library</div>
-
-    <label>Add Player</label>
-    <div class="row">
-      <input id="rosterAdd" type="text" placeholder="Type name and click Add">
-      <button id="rosterAddBtn" class="secondary">Add</button>
+  <!-- RIGHT: Players + Library merged -->
+  <div class="card playersCard">
+    <div class="playersCardHeader">
+      <div class="sectionTitle" style="text-align:center;">Players</div>
     </div>
+
+    <div class="playersCardBody">
+      <div id="rosterList" class="list playersList"></div>
+    </div>
+
+    <div class="playersCardFooter">
+      <div class="footerLeft">
+        <label>Add Player</label>
+        <input id="rosterAdd" type="text" placeholder="Type name and click Add">
+        <button id="rosterAddBtn" class="secondary">Add</button>
+      </div>
+      <div class="footerRight">
+        <button id="rosterClearBtn" class="secondary">Clear Players</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY + SCHEDULE -->
+<div class="summaryRow">
+  <div class="card summaryCard">
+    <div class="sectionTitle">Session Summary</div>
+
+    <div class="small" style="margin-bottom:6px;">Selected Players</div>
+    <div id="selectedPlayersBox" class="chipsBox"></div>
+
+    <div class="fixedCard">
+      <div class="sectionTitle" style="font-size:12px; margin-bottom:6px;">Fixed Partners</div>
+      <div class="row">
+        <select id="p1"></select>
+        <select id="p2"></select>
+        <button class="secondary" id="addPairBtn">Add Pair</button>
+      </div>
+      <div id="pairsBox" class="small" style="font-size:12px; margin-top:6px;"></div>
+    </div>
+
+    <div id="summaryBox" class="small" style="margin-top:10px;"></div>
 
     <div class="row" style="margin-top:12px;">
-      <button id="rosterClearBtn" class="secondary">Clear Players</button>
-    </div>
-
-    <div class="small" style="margin-top:10px;">
-      Libraries are saved on this device (localStorage).
+      <button id="generateBtn" class="generate" disabled>Generate Schedule</button>
+      <button id="copyBtn" class="secondary">Copy Result</button>
     </div>
   </div>
 
-  <!-- SECOND ROW: Summary (left) + Schedule (right) -->
-  <div class="summaryRow">
-    <div class="card summaryCard">
-      <div class="sectionTitle">Session Summary</div>
-
-      <div class="small" style="margin-bottom:6px;">Selected Players</div>
-      <div id="selectedPlayersBox" class="chipsBox"></div>
-
-      <div class="fixedCard">
-        <div class="sectionTitle" style="font-size:12px; margin-bottom:6px;">Fixed Partners</div>
-        <div class="row">
-          <select id="p1"></select>
-          <select id="p2"></select>
-          <button class="secondary" id="addPairBtn">Add Pair</button>
-        </div>
-        <div id="pairsBox" class="small" style="font-size:12px; margin-top:6px;"></div>
-      </div>
-
-      <!-- All messages integrated ABOVE buttons -->
-      <div id="summaryBox" class="small" style="margin-top:10px;"></div>
-
-      <div class="row" style="margin-top:12px;">
-        <button id="generateBtn" class="generate" disabled>Generate Schedule</button>
-        <button id="copyBtn" class="secondary">Copy Result</button>
-      </div>
-    </div>
-
-    <div class="card scheduleCard">
-      <div class="sectionTitle">Schedule</div>
-      <div id="output" class="small">No schedule generated.</div>
-    </div>
+  <div class="card scheduleCard">
+    <div class="sectionTitle">Schedule</div>
+    <div id="output" class="small">No schedule generated.</div>
   </div>
 </div>
 
@@ -299,8 +346,8 @@ function buildTimeOptions(){
 /* =========================
    Storage
 ========================= */
-const LS_ROSTER = "Tennis_roster_v6";
-const LS_COURTS = "Tennis_courts_v6";
+const LS_ROSTER = "Tennis_roster_v7";
+const LS_COURTS = "Tennis_courts_v7";
 
 const DEFAULT_ROSTER = [
   "Alice","Andrea","Ann","Anne","Anna","Brittany","Caroline","Chris","Echo","Elaine","Gillian",
@@ -320,7 +367,7 @@ let selectedPlayers = new Set();
 let selectedCourts = new Set();
 let fixedPairs = []; // [a,b]
 let lastText = "";
-let lastInfoMsg = ""; // extra line under counts
+let lastInfoMsg = "";
 
 function norm(s){ return (s||"").trim(); }
 function escapeHtml(s){
@@ -354,13 +401,14 @@ function loadAll(){
   roster = Array.isArray(rParsed) ? uniqCaseInsensitive(rParsed) : DEFAULT_ROSTER.slice();
   courts = Array.isArray(cParsed) ? uniqCaseInsensitive(cParsed) : DEFAULT_COURTS.slice();
 
-  roster.sort((a,b)=>a.localeCompare(b)); // keep players sorted
+  roster.sort((a,b)=>a.localeCompare(b));
   saveAll();
 }
 
 function requiredPlayersCount(){ return selectedCourts.size * 4; }
 function pairKey(a,b){ return [a,b].sort().join("||"); }
 function groupKey4(arr4){ return arr4.slice().sort().join("||"); }
+
 function shuffle(arr){
   const a = arr.slice();
   for (let i=a.length-1;i>0;i--){
@@ -497,7 +545,7 @@ function addPair(){
 }
 
 /* =========================
-   Summary (above buttons)
+   Summary
 ========================= */
 function renderSummaryLine(){
   const playersCount = selectedPlayers.size;
@@ -656,8 +704,7 @@ function formatDatePretty(iso){
 }
 
 function generateSchedule(){
-  // keep court selection insertion order (Set preserves insertion order in JS)
-  const courtsSelected = Array.from(selectedCourts);
+  const courtsSelected = Array.from(selectedCourts); // keep insertion order
   const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
   const need = courtsSelected.length * 4;
 
@@ -761,7 +808,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("rosterAddBtn").addEventListener("click", () => {
     const v = norm(document.getElementById("rosterAdd").value);
-    if (!v){ lastInfoMsg = "Type a player name."; onSelectionChanged(); return; }
+    if (!v){
+      lastInfoMsg = "Type a player name.";
+      onSelectionChanged();
+      return;
+    }
     roster = uniqCaseInsensitive(roster.concat([v])).sort((a,b)=>a.localeCompare(b));
     document.getElementById("rosterAdd").value = "";
     saveAll();
@@ -770,7 +821,6 @@ window.addEventListener("DOMContentLoaded", () => {
     onSelectionChanged();
   });
 
-  // press Enter in Add Player input
   document.getElementById("rosterAdd").addEventListener("keydown",(e)=>{
     if (e.key === "Enter"){
       e.preventDefault();
