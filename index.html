@@ -96,17 +96,16 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 /* Top: Date/Time/Courts */
 .topBar{
   display:grid;
-  grid-template-columns: 1fr 1fr 1.3fr;
+  grid-template-columns: 1fr 1fr;  /* 左：Date&Time  右：Courts */
   gap:12px;
-  align-items:end;
+  align-items:stretch;
 }
-@media(max-width:980px){ .topBar{ grid-template-columns:1fr; } }
+@media(max-width:980px){
+  .topBar{ grid-template-columns:1fr; }
+}
+.dateTimeStack .row{ gap:8px; }
+.dateTimeStack label{ margin-top:0; }
 
-.courtsCard{
-  border:2px solid #111;
-  border-radius:12px;
-  padding:12px;
-}
 
 /* Lists */
 .list{
@@ -734,3 +733,4 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
