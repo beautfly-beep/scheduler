@@ -186,21 +186,23 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 
 <!-- TOP: Date / Time / Courts -->
 <div class="card">
-  <div class="topBar">
-    <div>
-      <label>Date</label>
-      <input id="sessionDate" type="date">
-    </div>
-    <div>
-      <label>Time</label>
-      <select id="sessionTime"></select>
-    </div>
+<div class="topBar">
+  <!-- Left: Date & Time stacked -->
+  <div class="dateTimeStack">
+    <label>Date</label>
+    <input id="sessionDate" type="date">
 
-    <div class="courtsCard">
-      <div class="sectionTitle" style="margin-bottom:6px;">Courts</div>
-      <div id="courtList" class="list"></div>
-    </div>
+    <label style="margin-top:10px;">Time</label>
+    <select id="sessionTime"></select>
   </div>
+
+  <!-- Right: Courts -->
+  <div class="courtsCard">
+    <div class="sectionTitle" style="margin-bottom:6px;">Courts</div>
+    <div id="courtList" class="list"></div>
+  </div>
+</div>
+
 </div>
 
 <div class="layout">
@@ -733,4 +735,5 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
