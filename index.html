@@ -7,92 +7,137 @@
 
 <style>
 :root{
-  --bd:#ddd; --muted:#555; --danger:#b00020; --ok:#0b6b0b;
+  --bd:#ddd;
+  --muted:#555;
+  --danger:#b00020;
+  --ok:#0b6b0b;
+  --green:#0b6b0b;
+  --greenDark:#085108;
 }
+
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  margin:24px; color:#111;
+  margin:24px;
+  color:#111;
 }
+
 h1{ margin:0 0 14px; font-size:20px; }
 
-.card{ border:1px solid var(--bd); border-radius:12px; padding:14px; }
-.sectionTitle{ font-weight:800; margin:0 0 8px; }
-.sectionTitle.big{ font-size:14px; }
+.card{
+  border:1px solid var(--bd);
+  border-radius:12px;
+  padding:14px;
+}
 
-.row{ display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
-label{ font-weight:700; margin:10px 0 6px; display:block; }
+.sectionTitle{
+  font-weight:800;
+  margin:0 0 8px;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+label{
+  font-weight:700;
+  margin:10px 0 6px;
+  display:block;
+}
 
 input[type="text"], input[type="date"], select{
-  padding:10px; font-size:14px; border:1px solid #ccc;
-  border-radius:10px; width:100%; box-sizing:border-box;
+  padding:10px;
+  font-size:14px;
+  border:1px solid #ccc;
+  border-radius:10px;
+  width:100%;
+  box-sizing:border-box;
 }
+
 .row > input, .row > select{ flex:1; min-width:220px; }
 
 button{
-  padding:10px 14px; font-size:14px;
-  border-radius:10px; cursor:pointer;
+  padding:10px 14px;
+  font-size:14px;
+  border-radius:10px;
+  cursor:pointer;
+  border:1px solid #ccc;
+  background:#fff;
 }
-button.primary{ background:#111; color:#fff; border:1px solid #111; }
-button.secondary{ background:#fff; border:1px solid #ccc; }
+
 button:disabled{ opacity:.5; cursor:not-allowed; }
 
+button.secondary{ background:#fff; border:1px solid #ccc; }
+button.primary{ background:#111; color:#fff; border:1px solid #111; }
+
+/* Green Generate button */
+button.generate{
+  background:var(--green);
+  color:#fff;
+  border:1px solid var(--green);
+  font-weight:800;
+}
+button.generate:hover{ background:var(--greenDark); border-color:var(--greenDark); }
+button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
+
+.small{ font-size:13px; color:var(--muted); }
+.ok{ color:var(--ok); font-weight:800; }
+
 .layout{
-  display:grid; grid-template-columns:1.3fr .7fr;
-  gap:16px; margin-top:16px;
+  display:grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap:16px;
+  margin-top:16px;
 }
 @media(max-width:980px){ .layout{ grid-template-columns:1fr; } }
 
-.topPanel{
-  display:grid; grid-template-columns:.55fr 1.45fr;
-  gap:8px;
+/* Top: Date/Time/Courts */
+.topBar{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap:12px;
+  align-items:end;
 }
-@media(max-width:980px){ .topPanel{ grid-template-columns:1fr; } }
+@media(max-width:980px){ .topBar{ grid-template-columns:1fr; } }
 
 .courtsCard{
-  border:2px solid #111; border-radius:12px; padding:14px;
+  border:2px solid #111;
+  border-radius:12px;
+  padding:12px;
 }
 
-/* Smaller font for selection area (Courts/Roster lists) */
-.selectionArea{ font-size:13px; color:#222; }
-.small{ font-size:13px; color:var(--muted); }
-.ok{ color:var(--ok); font-weight:800; }
-.warn{ color:var(--danger); font-weight:800; }
-.pairItem{ display:flex; gap:8px; margin:6px 0; align-items:center; }
-
-/* Force list to be a real scroll container */
+/* Lists */
 .list{
   border:1px solid #eee;
   border-radius:10px;
   padding:10px;
-  height: 220px;          /* 固定高度：不会因为项目多而把页面撑爆 */
-  overflow-y: auto;       /* 垂直滚动 */
-  overflow-x: hidden;
+  height: 180px;
+  overflow-y:auto;
+  overflow-x:hidden;
   background:#fff;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 双列 */
-  column-gap: 12px;
-  row-gap: 4px;  
+
+  display:grid;
+  grid-template-columns: 1fr 1fr; /* default 2 cols */
+  column-gap:12px;
+  row-gap:4px;
 }
 
-/* Courts list can be a bit taller to emphasize it */
-.courtsCard .list{
-  height: 180px;          /* Courts 更高一点 */
-}
+.courtsCard .list{ height:140px; } /* courts smaller as you asked */
 
-/* Make each row clearly visible and clickable */
 .item{
   display:flex;
   align-items:center;
-  padding:4px 4px;               /* 原来 8px → 4px */
+  padding:4px 4px;
   border-bottom:1px dashed #eee;
   line-height:1.1;
 }
 .item:last-child{ border-bottom:none; }
 
-/* Make the checkbox/label area big enough to tap */
 .checkboxRow{
   display:flex;
-  gap:3px;                       /* 原来 10px → 6px */
+  gap:3px;
   align-items:center;
   cursor:pointer;
   width:100%;
@@ -100,96 +145,111 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
 }
 .checkboxRow input{ transform:scale(1.1); }
 
-/* optional: show a more obvious scrollbar in webkit browsers */
+/* Players list: desktop 4 columns, mobile 2 columns */
+.playersList{ grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 768px){
+  .playersList{ grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Fixed partners compact area */
+.fixedCard{
+  border:1px solid #eee;
+  border-radius:10px;
+  padding:10px;
+  margin-top:10px;
+  font-size:12px;
+}
+.fixedCard label{ font-size:12px; margin:6px 0 6px; }
+.fixedCard select, .fixedCard button{ font-size:12px; padding:8px 10px; }
+.pairItem{ display:flex; gap:8px; margin:6px 0; align-items:center; }
+
+/* Generate area as its own card */
+.generateCard{
+  border:2px solid #d7ead7;
+  background:#f4fbf4;
+}
+.generateCard .row{ gap:10px; }
+
+/* Output styles */
+.resultWrap{ font-size:16px; color:#111; }
+.resultHeader{ font-size:20px; font-weight:900; margin-bottom:10px; }
+.subHeader{ font-size:15px; margin-bottom:8px; color:#222; }
+
+/* Scrollbar */
 .list::-webkit-scrollbar{ width:10px; }
 .list::-webkit-scrollbar-thumb{ background:#cfcfcf; border-radius:10px; }
 .list::-webkit-scrollbar-track{ background:#f4f4f4; border-radius:10px; }
-
-
-/* Bigger font for generated results */
-.resultWrap{ font-size:16px; color:#111; }
-.resultHeader{
-  font-size:20px; font-weight:900; margin-bottom:10px;
-}
-.subHeader{
-  font-size:15px; margin-bottom:8px; color:#222;
-}
-/* ===== Roster: desktop 4 columns ===== */
-.rosterList{
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* ===== Mobile: roster 2 columns ===== */
-@media (max-width: 768px){
-  .rosterList{
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 </style>
 </head>
 
 <body>
 <h1>Round Robin Match Scheduler</h1>
 
-<!-- Date / Time -->
+<!-- TOP: Date / Time / Courts -->
 <div class="card">
-  <div class="row">
-    <div style="flex:1">
+  <div class="topBar">
+    <div>
       <label>Date</label>
       <input id="sessionDate" type="date">
     </div>
-    <div style="flex:1">
+    <div>
       <label>Time</label>
       <select id="sessionTime"></select>
+    </div>
+
+    <div class="courtsCard">
+      <div class="sectionTitle" style="margin-bottom:6px;">Courts</div>
+      <div id="courtList" class="list"></div>
     </div>
   </div>
 </div>
 
 <div class="layout">
-  <!-- LEFT -->
-  <div class="card">
-    <div class="topPanel selectionArea">
-      <!-- Courts -->
-      <div class="courtsCard">
-        <div class="sectionTitle big">Courts</div>
-        <div id="courtList" class="list"></div>
+  <!-- LEFT: Players + Fixed Partners + Counts + Generate -->
+  <div>
+    <!-- Players (main) -->
+    <div class="card">
+      <div class="sectionTitle">Players</div>
+      <div id="rosterList" class="list playersList"></div>
+
+      <!-- Fixed Partners (compact, below Players) -->
+      <div class="fixedCard">
+        <div class="sectionTitle" style="font-size:12px; margin-bottom:6px;">Fixed Partners</div>
+        <div class="row">
+          <select id="p1"></select>
+          <select id="p2"></select>
+          <button class="secondary" id="addPairBtn">Add Pair</button>
+        </div>
+        <div id="pairsBox" class="small" style="font-size:12px; margin-top:6px;"></div>
       </div>
 
-      <!-- Roster -->
-      <div>
-        <div class="sectionTitle">Roster</div>
-        <div id="rosterList" class="list rosterList"></div>
+      <!-- Counts (no "Validation" title, no red message) -->
+      <div class="small" style="margin-top:10px;">
+        <span id="selPlayersCount">0</span> players ·
+        <span id="selCourtsCount">0</span> courts ·
+        Need <strong id="requiredPlayers">0</strong> players
+        <span id="validationMsg" style="display:none;"></span>
       </div>
     </div>
 
-    <!-- Fixed Partners -->
-    <label style="margin-top:14px;">Fixed Partners</label>
-    <div class="row">
-      <select id="p1"></select>
-      <select id="p2"></select>
-      <button class="secondary" id="addPairBtn">Add Pair</button>
+    <!-- Generate area (separate, green button) -->
+    <div class="card generateCard" style="margin-top:16px;">
+      <div class="sectionTitle">Generate</div>
+      <div class="row">
+        <button id="generateBtn" class="generate" disabled>Generate a Schedule</button>
+        <button id="copyBtn" class="secondary">Copy Result</button>
+      </div>
+      <div id="status" class="small" style="margin-top:8px;"></div>
     </div>
-    <div id="pairsBox" class="small"></div>
 
-    <!-- Validation -->
-    <label style="margin-top:14px;">Validation</label>
-    <div class="small">
-      <span id="selPlayersCount">0</span> players ·
-      <span id="selCourtsCount">0</span> courts ·
-      Need <strong id="requiredPlayers">0</strong> players
+    <!-- Output -->
+    <div class="card" style="margin-top:16px;">
+      <div class="sectionTitle">Schedule</div>
+      <div id="output" class="small">No schedule generated.</div>
     </div>
-    <div id="validationMsg" class="small"></div>
-
-    <!-- Generate -->
-    <div class="row" style="margin-top:14px;">
-      <button id="generateBtn" class="primary" disabled>Generate Schedule</button>
-      <button id="copyBtn" class="secondary">Copy Result</button>
-    </div>
-    <div id="status" class="small"></div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT: Library -->
   <div class="card">
     <div class="sectionTitle">Library</div>
 
@@ -199,21 +259,14 @@ button:disabled{ opacity:.5; cursor:not-allowed; }
       <button id="rosterAddBtn" class="secondary">Add</button>
     </div>
 
-
     <div class="row" style="margin-top:12px;">
-      <button id="rosterClearBtn" class="secondary">Clear Roster</button>
+      <button id="rosterClearBtn" class="secondary">Clear Players</button>
     </div>
 
     <div class="small" style="margin-top:10px;">
       Libraries are saved on this device (localStorage).
     </div>
   </div>
-</div>
-
-<!-- Output -->
-<div class="card" style="margin-top:16px;">
-  <div class="sectionTitle">Schedule</div>
-  <div id="output" class="small">No schedule generated.</div>
 </div>
 
 <script>
@@ -241,38 +294,9 @@ const LS_ROSTER = "Tennis_roster_v4";
 const LS_COURTS = "Tennis_courts_v4";
 
 const DEFAULT_ROSTER = [
-  "Alice",
-  "Andrea",
-  "Ann",
-  "Anne",
-  "Anna",
-  "Brittany",
-  "Caroline",
-  "Chris",
-  "Echo",
-  "Elaine",
-  "Gillian",
-  "Ivette",
-  "Jane",
-  "Janet",
-  "Jennifer",
-  "Joanne",
-  "Karen",
-  "Kathy",
-  "Kelly L",
-  "Kelley W",
-  "Laura",
-  "Lisa K",
-  "Lisa W",
-  "Louli",
-  "Michele",
-  "Sandie",
-  "Sonia",
-  "Tao",
-  "Tessa",
-  "Tina",
-  "Veronika",
-  "Yuko"
+  "Alice","Andrea","Ann","Anne","Anna","Brittany","Caroline","Chris","Echo","Elaine","Gillian",
+  "Ivette","Jane","Janet","Jennifer","Joanne","Karen","Kathy","Kelly L","Kelley W","Laura",
+  "Lisa K","Lisa W","Louli","Michele","Sandie","Sonia","Tao","Tessa","Tina","Veronika","Yuko"
 ];
 
 const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13","CRT14","CRT15","CRT16","CRT17","CRT1","CRT2","CRT3","CRT4","CRT5","CRT6","CRT9"];
@@ -312,7 +336,6 @@ function loadAll(){
   roster = Array.isArray(rParsed) ? uniqCaseInsensitive(rParsed) : DEFAULT_ROSTER.slice();
   courts = Array.isArray(cParsed) ? uniqCaseInsensitive(cParsed) : DEFAULT_COURTS.slice();
   roster.sort((a,b)=>a.localeCompare(b));
-
   saveAll();
 }
 
@@ -335,7 +358,7 @@ function shuffle(arr){
 }
 
 /* =========================
-   Render lists (no delete buttons)
+   Render lists
 ========================= */
 function renderRoster(){
   const box = document.getElementById("rosterList");
@@ -349,7 +372,7 @@ function renderRoster(){
         </label>
       </div>
     `;
-  }).join("") || `<div class="small">No roster entries.</div>`;
+  }).join("") || `<div class="small">No player entries.</div>`;
 
   box.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
     cb.addEventListener("change",(e)=>{
@@ -426,7 +449,7 @@ window.removePair = function(i){
 function addPair(){
   const a = document.getElementById("p1").value;
   const b = document.getElementById("p2").value;
-  if (!a || !b || a===b){ setStatus("Select two different players.", "warn"); return; }
+  if (!a || !b || a===b){ setStatus("Select two different players.", ""); return; }
 
   const used = new Set(fixedPairs.flat());
   if (used.has(a) || used.has(b)){
@@ -439,7 +462,7 @@ function addPair(){
 }
 
 /* =========================
-   Validation
+   Counts (no red warning)
 ========================= */
 function onSelectionChanged(){
   document.getElementById("selPlayersCount").textContent = selectedPlayers.size;
@@ -451,9 +474,7 @@ function onSelectionChanged(){
   validateFixedPairsAgainstSelection();
   renderPairs();
 
-  const msg = document.getElementById("validationMsg");
   const ok = selectedCourts.size > 0 && selectedPlayers.size === need;
-  msg.innerHTML = ok ? `<span class="ok">Ready</span>` : `<span class="warn">Need exactly ${need} players for ${selectedCourts.size} courts</span>`;
   document.getElementById("generateBtn").disabled = !ok;
 }
 
@@ -595,7 +616,7 @@ function generateSchedule(){
   const need = courtsSelected.length * 4;
 
   if (courtsSelected.length === 0 || players.length !== need){
-    setStatus("Selection invalid. Fix courts/players first.", "warn");
+    setStatus("Select courts and exactly the required number of players.", "");
     return;
   }
 
@@ -604,7 +625,7 @@ function generateSchedule(){
 
   const set1 = makeSet(players, courtsSelected);
   if (!set1){
-    setStatus("Failed to build Set 1. Try again.", "warn");
+    setStatus("Failed to build Set 1. Try again.", "");
     return;
   }
   const stats1 = deriveSetStats(set1);
@@ -623,7 +644,7 @@ function generateSchedule(){
   }
   const set2 = best || makeSet(players, courtsSelected);
   if (!set2){
-    setStatus("Failed to build Set 2. Try again.", "warn");
+    setStatus("Failed to build Set 2. Try again.", "");
     return;
   }
 
@@ -651,7 +672,7 @@ function generateSchedule(){
     </div>
   `;
   lastText = out.innerText;
-  setStatus(`Generated. Set 2 penalty score: ${bestScore}`, "ok");
+  setStatus("Generated.", "ok");
 }
 
 /* =========================
@@ -683,14 +704,13 @@ window.addEventListener("DOMContentLoaded", () => {
       await navigator.clipboard.writeText(lastText || "");
       setStatus("Copied to clipboard.", "ok");
     } catch {
-      setStatus("Copy failed (browser permission).", "warn");
+      setStatus("Copy failed (browser permission).", "");
     }
   });
 
-  // Library add/clear
   document.getElementById("rosterAddBtn").addEventListener("click", () => {
     const v = norm(document.getElementById("rosterAdd").value);
-    if (!v){ setStatus("Type a player name.", "warn"); return; }
+    if (!v){ setStatus("Type a player name.", ""); return; }
     roster = uniqCaseInsensitive(roster.concat([v])).sort((a,b)=>a.localeCompare(b));
     document.getElementById("rosterAdd").value = "";
     saveAll();
@@ -698,9 +718,8 @@ window.addEventListener("DOMContentLoaded", () => {
     setStatus(`Added player: ${v}`, "ok");
   });
 
-
   document.getElementById("rosterClearBtn").addEventListener("click", () => {
-    if (!confirm("Clear roster library on this device?")) return;
+    if (!confirm("Clear players library on this device?")) return;
     roster = [];
     selectedPlayers.clear();
     fixedPairs = [];
@@ -709,32 +728,9 @@ window.addEventListener("DOMContentLoaded", () => {
     refreshPartnerDropdowns();
     renderPairs();
     onSelectionChanged();
-    setStatus("Roster cleared.", "ok");
+    setStatus("Players cleared.", "ok");
   });
-
-
 });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
