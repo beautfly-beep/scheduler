@@ -9,7 +9,6 @@
 :root{
   --bd:#ddd;
   --muted:#555;
-  --danger:#b00020;
   --ok:#0b6b0b;
   --green:#0b6b0b;
   --greenDark:#085108;
@@ -20,32 +19,16 @@ body{
   margin:24px;
   color:#111;
 }
-
 h1{ margin:0 0 14px; font-size:20px; }
 
-.card{
-  border:1px solid var(--bd);
-  border-radius:12px;
-  padding:14px;
-}
+.card{ border:1px solid var(--bd); border-radius:12px; padding:14px; }
+.sectionTitle{ font-weight:800; margin:0 0 8px; }
 
-.sectionTitle{
-  font-weight:800;
-  margin:0 0 8px;
-}
+.small{ font-size:13px; color:var(--muted); }
+.ok{ color:var(--ok); font-weight:800; }
 
-.row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  align-items:center;
-}
-
-label{
-  font-weight:700;
-  margin:10px 0 6px;
-  display:block;
-}
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+label{ font-weight:700; margin:10px 0 6px; display:block; }
 
 input[type="text"], input[type="date"], select{
   padding:10px;
@@ -56,8 +39,6 @@ input[type="text"], input[type="date"], select{
   box-sizing:border-box;
 }
 
-.row > input, .row > select{ flex:1; min-width:220px; }
-
 button{
   padding:10px 14px;
   font-size:14px;
@@ -66,24 +47,18 @@ button{
   border:1px solid #ccc;
   background:#fff;
 }
-
+button.secondary{ background:#fff; border:1px solid #ccc; }
 button:disabled{ opacity:.5; cursor:not-allowed; }
 
-button.secondary{ background:#fff; border:1px solid #ccc; }
-button.primary{ background:#111; color:#fff; border:1px solid #111; }
-
-/* Green Generate button */
+/* GREEN Generate button */
 button.generate{
   background:var(--green);
   color:#fff;
   border:1px solid var(--green);
-  font-weight:800;
+  font-weight:900;
 }
 button.generate:hover{ background:var(--greenDark); border-color:var(--greenDark); }
 button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
-
-.small{ font-size:13px; color:var(--muted); }
-.ok{ color:var(--ok); font-weight:800; }
 
 .layout{
   display:grid;
@@ -93,26 +68,29 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 }
 @media(max-width:980px){ .layout{ grid-template-columns:1fr; } }
 
-/* Top: Date/Time/Courts */
+/* TOP area: left Date+Time stacked, right Courts */
 .topBar{
   display:grid;
-  grid-template-columns: 1fr 1fr;  /* 左：Date&Time  右：Courts */
+  grid-template-columns: 1fr 1fr;
   gap:12px;
   align-items:stretch;
 }
-@media(max-width:980px){
-  .topBar{ grid-template-columns:1fr; }
-}
-.dateTimeStack .row{ gap:8px; }
-.dateTimeStack label{ margin-top:0; }
+@media(max-width:980px){ .topBar{ grid-template-columns:1fr; } }
 
+.dateTimeStack label{ margin-top:0; }
+.dateTimeStack select, .dateTimeStack input{ width:100%; }
+
+.courtsCard{
+  border:2px solid #111;
+  border-radius:12px;
+  padding:12px;
+}
 
 /* Lists */
 .list{
   border:1px solid #eee;
   border-radius:10px;
   padding:10px;
-  height: 180px;
   overflow-y:auto;
   overflow-x:hidden;
   background:#fff;
@@ -122,8 +100,11 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
   column-gap:12px;
   row-gap:4px;
 }
-
-.courtsCard .list{ height:140px; } /* courts smaller as you asked */
+.courtsCard .list{ height:140px; } /* courts smaller */
+.playersList{ height:260px; grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 768px){
+  .playersList{ grid-template-columns: repeat(2, 1fr); }
+}
 
 .item{
   display:flex;
@@ -144,35 +125,56 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 }
 .checkboxRow input{ transform:scale(1.1); }
 
-/* Players list: desktop 4 columns, mobile 2 columns */
-.playersList{ grid-template-columns: repeat(4, 1fr); }
-@media (max-width: 768px){
-  .playersList{ grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Fixed partners compact area */
-.fixedCard{
-  border:1px solid #eee;
-  border-radius:10px;
-  padding:10px;
-  margin-top:10px;
-  font-size:12px;
-}
-.fixedCard label{ font-size:12px; margin:6px 0 6px; }
-.fixedCard select, .fixedCard button{ font-size:12px; padding:8px 10px; }
-.pairItem{ display:flex; gap:8px; margin:6px 0; align-items:center; }
-
-/* Generate area as its own card */
+/* Green summary card */
 .generateCard{
   border:2px solid #d7ead7;
   background:#f4fbf4;
 }
-.generateCard .row{ gap:10px; }
 
-/* Output styles */
+.chipsBox{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:8px;
+  border:1px solid #e6f2e6;
+  background:#ffffff;
+  border-radius:10px;
+  min-height:44px;
+}
+
+.chip{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid #d7ead7;
+  background:#f4fbf4;
+  font-size:12px;
+  font-weight:700;
+  color:#113311;
+}
+
+/* Fixed partners compact */
+.fixedCard{
+  border:1px solid #e6f2e6;
+  border-radius:10px;
+  padding:10px;
+  margin-top:10px;
+  font-size:12px;
+  background:#fff;
+}
+.fixedCard .row{ gap:8px; }
+.fixedCard select, .fixedCard button{ font-size:12px; padding:8px 10px; }
+.pairItem{ display:flex; gap:8px; margin:6px 0; align-items:center; }
+
+/* Output */
 .resultWrap{ font-size:16px; color:#111; }
 .resultHeader{ font-size:20px; font-weight:900; margin-bottom:10px; }
 .subHeader{ font-size:15px; margin-bottom:8px; color:#222; }
+
+table{ width:100%; border-collapse:collapse; margin-top:8px; }
+th, td{ border:1px solid #eee; padding:8px; font-size:13px; text-align:left; }
+th{ background:#fafafa; }
 
 /* Scrollbar */
 .list::-webkit-scrollbar{ width:10px; }
@@ -184,36 +186,47 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
 <body>
 <h1>Round Robin Match Scheduler</h1>
 
-<!-- TOP: Date / Time / Courts -->
+<!-- TOP: Date/Time left (stack), Courts right -->
 <div class="card">
-<div class="topBar">
-  <!-- Left: Date & Time stacked -->
-  <div class="dateTimeStack">
-    <label>Date</label>
-    <input id="sessionDate" type="date">
+  <div class="topBar">
+    <div class="dateTimeStack">
+      <label>Date</label>
+      <input id="sessionDate" type="date">
 
-    <label style="margin-top:10px;">Time</label>
-    <select id="sessionTime"></select>
+      <label style="margin-top:10px;">Time</label>
+      <select id="sessionTime"></select>
+    </div>
+
+    <div class="courtsCard">
+      <div class="sectionTitle" style="margin-bottom:6px;">Courts</div>
+      <div id="courtList" class="list"></div>
+      <div class="small" style="margin-top:6px;">Select courts first.</div>
+    </div>
   </div>
-
-  <!-- Right: Courts -->
-  <div class="courtsCard">
-    <div class="sectionTitle" style="margin-bottom:6px;">Courts</div>
-    <div id="courtList" class="list"></div>
-  </div>
-</div>
-
 </div>
 
 <div class="layout">
-  <!-- LEFT: Players + Fixed Partners + Counts + Generate -->
+  <!-- LEFT: Players + Output -->
   <div>
-    <!-- Players (main) -->
     <div class="card">
       <div class="sectionTitle">Players</div>
       <div id="rosterList" class="list playersList"></div>
+    </div>
 
-      <!-- Fixed Partners (compact, below Players) -->
+    <div class="card" style="margin-top:16px;">
+      <div class="sectionTitle">Schedule</div>
+      <div id="output" class="small">No schedule generated.</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Green Summary + Library -->
+  <div>
+    <div class="card generateCard">
+      <div class="sectionTitle">Session Summary</div>
+
+      <div class="small" style="margin-bottom:6px;">Selected Players</div>
+      <div id="selectedPlayersBox" class="chipsBox"></div>
+
       <div class="fixedCard">
         <div class="sectionTitle" style="font-size:12px; margin-bottom:6px;">Fixed Partners</div>
         <div class="row">
@@ -224,48 +237,32 @@ button.generate:disabled{ background:#a7c9a7; border-color:#a7c9a7; }
         <div id="pairsBox" class="small" style="font-size:12px; margin-top:6px;"></div>
       </div>
 
-      <!-- Counts (no "Validation" title, no red message) -->
-      <div class="small" style="margin-top:10px;">
-        <span id="selPlayersCount">0</span> players ·
-        <span id="selCourtsCount">0</span> courts ·
-        Need <strong id="requiredPlayers">0</strong> players
-        <span id="validationMsg" style="display:none;"></span>
-      </div>
-    </div>
+      <div id="countsLine" class="small" style="margin-top:10px;"></div>
 
-    <!-- Generate area (separate, green button) -->
-    <div class="card generateCard" style="margin-top:16px;">
-      <div class="sectionTitle">Generate</div>
-      <div class="row">
-        <button id="generateBtn" class="generate" disabled>Generate a Schedule</button>
+      <div class="row" style="margin-top:12px;">
+        <button id="generateBtn" class="generate" disabled>Generate Schedule</button>
         <button id="copyBtn" class="secondary">Copy Result</button>
       </div>
+
       <div id="status" class="small" style="margin-top:8px;"></div>
     </div>
 
-    <!-- Output -->
     <div class="card" style="margin-top:16px;">
-      <div class="sectionTitle">Schedule</div>
-      <div id="output" class="small">No schedule generated.</div>
-    </div>
-  </div>
+      <div class="sectionTitle">Library</div>
 
-  <!-- RIGHT: Library -->
-  <div class="card">
-    <div class="sectionTitle">Library</div>
+      <label>Add Player</label>
+      <div class="row">
+        <input id="rosterAdd" type="text" placeholder="Type name and click Add">
+        <button id="rosterAddBtn" class="secondary">Add</button>
+      </div>
 
-    <label>Add Player</label>
-    <div class="row">
-      <input id="rosterAdd" type="text">
-      <button id="rosterAddBtn" class="secondary">Add</button>
-    </div>
+      <div class="row" style="margin-top:12px;">
+        <button id="rosterClearBtn" class="secondary">Clear Players</button>
+      </div>
 
-    <div class="row" style="margin-top:12px;">
-      <button id="rosterClearBtn" class="secondary">Clear Players</button>
-    </div>
-
-    <div class="small" style="margin-top:10px;">
-      Libraries are saved on this device (localStorage).
+      <div class="small" style="margin-top:10px;">
+        Libraries are saved on this device (localStorage).
+      </div>
     </div>
   </div>
 </div>
@@ -300,7 +297,10 @@ const DEFAULT_ROSTER = [
   "Lisa K","Lisa W","Louli","Michele","Sandie","Sonia","Tao","Tessa","Tina","Veronika","Yuko"
 ];
 
-const DEFAULT_COURTS = ["CRT10","CRT11","CRT12","CRT13","CRT14","CRT15","CRT16","CRT17","CRT1","CRT2","CRT3","CRT4","CRT5","CRT6","CRT9"];
+const DEFAULT_COURTS = [
+  "CRT10","CRT11","CRT12","CRT13","CRT14","CRT15","CRT16","CRT17",
+  "CRT1","CRT2","CRT3","CRT4","CRT5","CRT6","CRT9"
+];
 
 let roster = [];
 let courts = [];
@@ -324,19 +324,24 @@ function uniqCaseInsensitive(arr){
   return out;
 }
 function safeJsonParse(s, fallback){ try { return JSON.parse(s); } catch { return fallback; } }
+
 function saveAll(){
   try { localStorage.setItem(LS_ROSTER, JSON.stringify(roster)); } catch {}
   try { localStorage.setItem(LS_COURTS, JSON.stringify(courts)); } catch {}
 }
+
 function loadAll(){
   let rRaw=null,cRaw=null;
   try { rRaw = localStorage.getItem(LS_ROSTER); } catch {}
   try { cRaw = localStorage.getItem(LS_COURTS); } catch {}
+
   const rParsed = rRaw ? safeJsonParse(rRaw, null) : null;
   const cParsed = cRaw ? safeJsonParse(cRaw, null) : null;
+
   roster = Array.isArray(rParsed) ? uniqCaseInsensitive(rParsed) : DEFAULT_ROSTER.slice();
   courts = Array.isArray(cParsed) ? uniqCaseInsensitive(cParsed) : DEFAULT_COURTS.slice();
-  roster.sort((a,b)=>a.localeCompare(b));
+
+  roster.sort((a,b)=>a.localeCompare(b));  // keep players neat
   saveAll();
 }
 
@@ -345,6 +350,7 @@ function setStatus(msg, cls=""){
   el.className = "small " + (cls||"");
   el.textContent = msg || "";
 }
+
 function requiredPlayersCount(){ return selectedCourts.size * 4; }
 function pairKey(a,b){ return [a,b].sort().join("||"); }
 function groupKey4(arr4){ return arr4.slice().sort().join("||"); }
@@ -410,7 +416,22 @@ function renderCourts(){
 }
 
 /* =========================
-   Fixed partners dropdowns
+   Selected Players chips
+========================= */
+function renderSelectedPlayersBox(){
+  const box = document.getElementById("selectedPlayersBox");
+  if (!box) return;
+
+  const players = Array.from(selectedPlayers);
+  if (players.length === 0){
+    box.innerHTML = `<span class="small">No players selected.</span>`;
+    return;
+  }
+  box.innerHTML = players.map(p => `<span class="chip">${escapeHtml(p)}</span>`).join("");
+}
+
+/* =========================
+   Fixed partners
 ========================= */
 function refreshPartnerDropdowns(){
   const p1 = document.getElementById("p1");
@@ -466,16 +487,22 @@ function addPair(){
    Counts (no red warning)
 ========================= */
 function onSelectionChanged(){
-  document.getElementById("selPlayersCount").textContent = selectedPlayers.size;
-  document.getElementById("selCourtsCount").textContent = selectedCourts.size;
   const need = requiredPlayersCount();
-  document.getElementById("requiredPlayers").textContent = need;
+  const courtsCount = selectedCourts.size;
+  const playersCount = selectedPlayers.size;
+  const stillNeed = Math.max(0, need - playersCount);
 
+  renderSelectedPlayersBox();
   refreshPartnerDropdowns();
   validateFixedPairsAgainstSelection();
   renderPairs();
 
-  const ok = selectedCourts.size > 0 && selectedPlayers.size === need;
+  const line = document.getElementById("countsLine");
+  if (line){
+    line.innerHTML = `<strong>${playersCount}</strong> players · <strong>${courtsCount}</strong> courts · Still need <strong>${stillNeed}</strong> players`;
+  }
+
+  const ok = courtsCount > 0 && playersCount === need;
   document.getElementById("generateBtn").disabled = !ok;
 }
 
@@ -612,6 +639,7 @@ function formatDatePretty(iso){
 }
 
 function generateSchedule(){
+  // keep courts sorted for consistent output; change here if you want "library order"
   const courtsSelected = Array.from(selectedCourts).sort((a,b)=>a.localeCompare(b));
   const players = Array.from(selectedPlayers).sort((a,b)=>a.localeCompare(b));
   const need = courtsSelected.length * 4;
@@ -693,7 +721,6 @@ window.addEventListener("DOMContentLoaded", () => {
   loadAll();
   renderRoster();
   renderCourts();
-  refreshPartnerDropdowns();
   renderPairs();
   onSelectionChanged();
 
@@ -726,7 +753,6 @@ window.addEventListener("DOMContentLoaded", () => {
     fixedPairs = [];
     saveAll();
     renderRoster();
-    refreshPartnerDropdowns();
     renderPairs();
     onSelectionChanged();
     setStatus("Players cleared.", "ok");
@@ -735,5 +761,3 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
-
