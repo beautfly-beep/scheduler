@@ -36,8 +36,8 @@
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const SUPABASE_URL = "在这里粘贴你的 Project URL";
-const SUPABASE_ANON_KEY = "在这里粘贴你的 anon public key";
+const SUPABASE_URL = "https://www.playerhoods.com";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtZnZmZHhkbmlzY2lqdmhzcmF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMDA4ODIsImV4cCI6MjA4MzU3Njg4Mn0.75TrwyOEtklER4DjHVhKYI3RNFbKRwhyVpPLTOzKdoM";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
