@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Playerhood Settings</title>
+</head>
+<body style="font-family: system-ui; max-width: 600px; margin: 40px;">
+  <h2>Play Limits Settings</h2>
+
+  <div id="login">
+    <input id="email" placeholder="your@email.com" style="padding:8px;">
+    <button id="send">Send Login Link</button>
+    <p id="loginMsg"></p>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <p id="who"></p>
+
+    <label>Daily max (0–3)</label><br>
+    <select id="daily">
+      <option>0</option><option>1</option><option>2</option><option>3</option>
+    </select><br><br>
+
+    <label>Weekly max (0–10)</label><br>
+    <select id="weekly">
+      <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+      <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+    </select><br><br>
+
+    <button id="save">Save</button>
+    <button id="logout">Logout</button>
+
+    <p id="msg"></p>
+  </div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL = "在这里粘贴你的 Project URL";
+const SUPABASE_ANON_KEY = "在这里粘贴你的 anon public key";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+
+async function refresh() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    $("login").style.display = "block";
+    $("panel").style.display = "none";
+    return;
+  }
+
+  $("login").style.display = "none";
+  $("panel").style.display = "block";
+  $("who").textContent = "Logged in as: " + session.user.email;
+
+  const { data } = await supabase
+    .from("user_settings")
+    .select("daily_match_cap, weekly_match_cap")
+    .eq("user_id", session.user.id)
+    .maybeSingle();
+
+  $("daily").value = data?.daily_match_cap ?? 1;
+  $("weekly").value = data?.weekly_match_cap ?? 4;
+}
+
+$("send").onclick = async () => {
+  const email = $("email").value;
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  $("loginMsg").textContent = error ? error.message : "Check your email.";
+};
+
+$("save").onclick = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const payload = {
+    user_id: session.user.id,
+    daily_match_cap: Number($("daily").value),
+    weekly_match_cap: Number($("weekly").value),
+    timezone: "America/Toronto"
+  };
+
+  const { error } = await supabase.from("user_settings")
+    .upsert(payload, { onConflict: "user_id" });
+
+  $("msg").textContent = error ? error.message : "Saved!";
+};
+
+$("logout").onclick = async () => {
+  await supabase.auth.signOut();
+  refresh();
+};
+
+supabase.auth.onAuthStateChange(refresh);
+refresh();
+</script>
+</body>
+</html>
